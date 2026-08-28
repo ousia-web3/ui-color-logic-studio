@@ -25,6 +25,9 @@ npm run build:extension
 - 웹 이미지 우클릭 → **이 이미지로 UI 컬러 분석**: 선택한 이미지를 가져와 바로 분석합니다.
 - 페이지 빈 영역 우클릭 → **현재 화면 캡처 후 UI 컬러 분석**: 현재 보이는 탭을 PNG로 캡처해 분석합니다.
 - 직접 업로드, 테스트 50장, 프로젝트별 자동 저장, JSON 백업은 웹 버전과 동일하게 동작합니다.
+- 썸네일 클릭은 순서와 스크롤을 바꾸지 않고 선택 이미지만 전환하며, 양쪽 화살표로 목록을 이동합니다.
+- 상품·콘텐츠·배너별 팔레트 저장, 실행 취소·다시 실행, 선택 항목 일괄 검수와 변경 후 JSON 백업 경고를 지원합니다.
+- 큰 업로드 이미지 자동 최적화, 집중 검수, 브랜드 프리셋, CSS·Tailwind·Figma Tokens 선택 내보내기를 지원합니다.
 
 ## 저장 범위
 
@@ -44,3 +47,5 @@ npm run build:extension
 ## 배포 파일
 
 빌드하면 `public/downloads/ui-color-logic-studio-extension.zip`도 함께 생성됩니다. 이 ZIP은 웹 앱의 **Chrome 확장** 버튼에서 내려받을 수 있고, Chrome 웹 스토어 업로드 파일로도 사용할 수 있습니다. 공개 개인정보처리 안내는 `/extension-privacy.html`에 제공됩니다.
+
+웹 스토어 등록용 실제 화면 3장은 `extension/store-assets`에 1280×800 JPG로 보관합니다. 등록 문안은 `STORE_LISTING_KO.md`, 최종 확인 항목은 `RELEASE_CHECKLIST.md`를 사용하세요.

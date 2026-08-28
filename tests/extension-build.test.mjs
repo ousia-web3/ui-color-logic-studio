@@ -8,6 +8,7 @@ test("packages a least-privilege Manifest V3 extension", async () => {
   const manifest = JSON.parse(await readFile(new URL("manifest.json", extensionRoot), "utf8"));
 
   assert.equal(manifest.manifest_version, 3);
+  assert.equal(manifest.version, "1.1.0");
   assert.equal(manifest.background.service_worker, "background.js");
   assert.deepEqual(manifest.permissions.sort(), [
     "activeTab",
@@ -36,5 +37,23 @@ test("packages the studio, manual, and bundled test set", async () => {
     access(new URL("test-images/korean-01.webp", extensionRoot)),
     access(new URL("test-images/western-01.webp", extensionRoot)),
     access(new URL("test-images/chinese-01.webp", extensionRoot)),
+  ]);
+});
+
+test("keeps right-click permissions scoped and clears temporary captures", async () => {
+  const [background, bridge] = await Promise.all([
+    readFile(new URL("../extension/public/background.js", import.meta.url), "utf8"),
+    readFile(new URL("../extension/main.tsx", import.meta.url), "utf8"),
+  ]);
+  assert.match(background, /chrome\.permissions\.request\(\{ origins: \[origin\] \}\)/);
+  assert.match(background, /chrome\.tabs\.captureVisibleTab/);
+  assert.match(bridge, /chromeApi\.storage\.local\.remove\(captureKey\)/);
+  assert.match(bridge, /runSelfCheck/);
+});
+
+test("includes store listing and release checklist", async () => {
+  await Promise.all([
+    access(new URL("../extension/STORE_LISTING_KO.md", import.meta.url)),
+    access(new URL("../extension/RELEASE_CHECKLIST.md", import.meta.url)),
   ]);
 });

@@ -20,6 +20,7 @@
 }
 
 .extension-command-bar strong { font-size: 11px; }
+.extension-command-bar strong small { margin-left: 4px; color: #899083; font-family: var(--font-mono); font-size: 8px; }
 .extension-command-bar span { color: #aeb5a7; font-size: 10px; }
 .extension-mode-dot { width: 7px; height: 7px; border-radius: 50%; background: #dff168; box-shadow: 0 0 0 4px rgba(223, 241, 104, .1); }
 

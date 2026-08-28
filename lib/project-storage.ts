@@ -1,4 +1,4 @@
-import type { ImageAnalysis, Tuning } from "@/lib/color-engine";
+import type { BrandRules, ImageAnalysis, Tuning, UIPalette } from "@/lib/color-engine";
 
 export type ProjectTemplate = "product" | "content" | "banner";
 export type ProjectTab = "studio" | "batch";
@@ -11,9 +11,38 @@ export type PreviewCopyData = {
   cta: string;
 };
 
+export type ProjectVersionItem = {
+  id: string;
+  rawKey: string;
+  palette: UIPalette;
+  status: ImageAnalysis["status"];
+  templatePalettes?: ImageAnalysis["templatePalettes"];
+};
+
+export type ProjectVersion = {
+  id: string;
+  label: string;
+  createdAt: string;
+  tuning: Tuning;
+  brand: BrandRules;
+  template: ProjectTemplate;
+  items: ProjectVersionItem[];
+};
+
+export const DEFAULT_BRAND: BrandRules = {
+  name: "브랜드 기본",
+  enabled: false,
+  colors: {
+    key: "#59643A",
+    accent: "#7A4B35",
+    surface: "#F7F6F1",
+  },
+  lockedRoles: [],
+};
+
 export type StoredProject = {
   format: "ui-color-logic-project";
-  exportVersion: 2;
+  exportVersion: 4;
   id: string;
   name: string;
   createdAt: string;
@@ -24,6 +53,10 @@ export type StoredProject = {
   copy: PreviewCopyData;
   template: ProjectTemplate;
   tab: ProjectTab;
+  brand: BrandRules;
+  versions: ProjectVersion[];
+  lastBackupAt: string | null;
+  backupDirty: boolean;
 };
 
 export type ProjectSummary = {
@@ -32,6 +65,14 @@ export type ProjectSummary = {
   createdAt: string;
   updatedAt: string;
   itemCount: number;
+  sizeBytes?: number;
+};
+
+export type BrandPreset = {
+  id: string;
+  name: string;
+  brand: BrandRules;
+  updatedAt: string;
 };
 
 type SettingRecord = { key: string; value: string };
@@ -44,6 +85,7 @@ type TestCacheRecord = {
 const DATABASE_NAME = "ui-color-logic-studio";
 const DATABASE_VERSION = 1;
 const ACTIVE_PROJECT_KEY = "active-project-id";
+const BRAND_PRESETS_KEY = "brand-presets";
 
 const requestResult = <T,>(request: IDBRequest<T>) => new Promise<T>((resolve, reject) => {
   request.onsuccess = () => resolve(request.result);
@@ -100,6 +142,7 @@ export async function saveProject(project: StoredProject) {
       createdAt: project.createdAt,
       updatedAt: project.updatedAt,
       itemCount: project.items.length,
+      sizeBytes: new TextEncoder().encode(JSON.stringify(project)).byteLength,
     };
     transaction.objectStore("projects").put(project);
     transaction.objectStore("projectSummaries").put(summary);
@@ -116,7 +159,7 @@ export async function getProject(id: string) {
   try {
     const transaction = database.transaction("projects", "readonly");
     const project = await requestResult(transaction.objectStore("projects").get(id));
-    return project as StoredProject | undefined;
+    return project ? normalizeProject(project) ?? undefined : undefined;
   } finally {
     database.close();
   }
@@ -150,6 +193,36 @@ export async function setActiveProjectId(id: string) {
     const transaction = database.transaction("settings", "readwrite");
     const completion = transactionDone(transaction);
     transaction.objectStore("settings").put({ key: ACTIVE_PROJECT_KEY, value: id } satisfies SettingRecord);
+    await completion;
+  } finally {
+    database.close();
+  }
+}
+
+export async function getBrandPresets(): Promise<BrandPreset[]> {
+  const database = await openDatabase();
+  try {
+    const transaction = database.transaction("settings", "readonly");
+    const setting = await requestResult(transaction.objectStore("settings").get(BRAND_PRESETS_KEY)) as SettingRecord | undefined;
+    if (!setting?.value) return [];
+    const parsed = JSON.parse(setting.value) as unknown;
+    return Array.isArray(parsed) ? parsed.filter((item): item is BrandPreset => isObject(item)
+      && typeof item.id === "string"
+      && typeof item.name === "string"
+      && isObject(item.brand)) : [];
+  } catch {
+    return [];
+  } finally {
+    database.close();
+  }
+}
+
+export async function saveBrandPresets(presets: BrandPreset[]) {
+  const database = await openDatabase();
+  try {
+    const transaction = database.transaction("settings", "readwrite");
+    const completion = transactionDone(transaction);
+    transaction.objectStore("settings").put({ key: BRAND_PRESETS_KEY, value: JSON.stringify(presets) } satisfies SettingRecord);
     await completion;
   } finally {
     database.close();
@@ -228,7 +301,11 @@ export async function requestPersistentBrowserStorage() {
 const isObject = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null;
 
 export function parseProjectFile(value: unknown): StoredProject | null {
-  if (!isObject(value) || value.format !== "ui-color-logic-project" || value.exportVersion !== 2) return null;
+  return normalizeProject(value);
+}
+
+function normalizeProject(value: unknown): StoredProject | null {
+  if (!isObject(value) || value.format !== "ui-color-logic-project" || ![2, 3, 4].includes(Number(value.exportVersion))) return null;
   if (typeof value.name !== "string" || !Array.isArray(value.items)) return null;
   if (!isObject(value.tuning) || !isObject(value.copy)) return null;
   const tuning = value.tuning;
@@ -246,5 +323,32 @@ export function parseProjectFile(value: unknown): StoredProject | null {
     && isObject(item.palette))) return null;
   if (!(["product", "content", "banner"] as unknown[]).includes(value.template)) return null;
   if (!(["studio", "batch"] as unknown[]).includes(value.tab)) return null;
-  return value as unknown as StoredProject;
+  const brandValue = isObject(value.brand) ? value.brand : null;
+  const brand: BrandRules = brandValue && typeof brandValue.name === "string"
+    ? {
+      name: brandValue.name,
+      enabled: typeof brandValue.enabled === "boolean" ? brandValue.enabled : false,
+      colors: isObject(brandValue.colors)
+        ? Object.fromEntries(Object.entries(brandValue.colors).filter(([, color]) => typeof color === "string"))
+        : { ...DEFAULT_BRAND.colors },
+      lockedRoles: Array.isArray(brandValue.lockedRoles)
+        ? brandValue.lockedRoles.filter((role): role is BrandRules["lockedRoles"][number] => typeof role === "string")
+        : [],
+    }
+    : { ...DEFAULT_BRAND, colors: { ...DEFAULT_BRAND.colors }, lockedRoles: [] };
+  const versions = Array.isArray(value.versions)
+    ? value.versions.filter((version): version is ProjectVersion => isObject(version)
+      && typeof version.id === "string"
+      && typeof version.label === "string"
+      && typeof version.createdAt === "string"
+      && Array.isArray(version.items))
+    : [];
+  return {
+    ...(value as unknown as Omit<StoredProject, "exportVersion" | "brand" | "versions" | "lastBackupAt" | "backupDirty">),
+    exportVersion: 4,
+    brand,
+    versions,
+    lastBackupAt: typeof value.lastBackupAt === "string" ? value.lastBackupAt : null,
+    backupDirty: typeof value.backupDirty === "boolean" ? value.backupDirty : typeof value.lastBackupAt !== "string",
+  };
 }

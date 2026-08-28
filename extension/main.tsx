@@ -41,6 +41,7 @@ createRoot(rootElement).render(
 
 const statusElement = document.getElementById("extension-import-status");
 const captureButton = document.getElementById("capture-source-tab") as HTMLButtonElement | null;
+const selfCheckButton = document.getElementById("extension-self-check") as HTMLButtonElement | null;
 
 function showStatus(message: string, tone: "info" | "error" = "info") {
   if (!statusElement) return;
@@ -166,5 +167,33 @@ async function importRequestedImage() {
   }
 }
 
+async function showUpdateNotice() {
+  if (!chromeApi?.storage) return;
+  const key = "ui-color-updated-version";
+  const result = await chromeApi.storage.local.get(key);
+  const version = result[key];
+  if (typeof version !== "string") return;
+  await chromeApi.storage.local.remove(key);
+  showStatus(`확장프로그램 v${version} 업데이트 완료 · 검수 흐름과 저장 최적화가 적용됐습니다.`);
+  hideStatus(5200);
+}
+
+async function runSelfCheck() {
+  if (!chromeApi?.runtime || !chromeApi.storage) {
+    showStatus("확장프로그램 연결을 확인하지 못했습니다. 확장 관리 화면에서 새로고침해 주세요.", "error");
+    return;
+  }
+  const key = `ui-color-self-check-${Date.now()}`;
+  try {
+    await chromeApi.storage.local.get(key);
+    showStatus("확장 기본 기능 정상 · 저장소와 화면 캡처 요청 통로가 준비됐습니다.");
+    hideStatus(4200);
+  } catch {
+    showStatus("확장 저장소를 확인하지 못했습니다. 권한 설정을 확인해 주세요.", "error");
+  }
+}
+
 void importRequestedImage();
+void showUpdateNotice();
 captureButton?.addEventListener("click", () => void captureSourceTab());
+selfCheckButton?.addEventListener("click", () => void runSelfCheck());

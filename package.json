@@ -7,7 +7,7 @@
   },
   "scripts": {
     "install:ci": "bash scripts/install-ci.sh",
-    "dev": "next dev -p 5173",
+    "dev": "vite",
     "build": "bash scripts/build-verified.sh",
     "build:local": "next build",
     "build:vercel": "npm run build:extension && npm run build:local",

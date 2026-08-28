@@ -18,6 +18,22 @@ export type Candidate = {
   score: number;
 };
 
+export type PaletteColorRole = Exclude<keyof UIPalette, "contrast">;
+export type TemplateKind = "product" | "content" | "banner";
+
+export type BrandRules = {
+  name: string;
+  enabled: boolean;
+  colors: Partial<Record<PaletteColorRole, string>>;
+  lockedRoles: PaletteColorRole[];
+};
+
+export type RegionCandidates = {
+  full: Candidate[];
+  bottom: Candidate[];
+  left: Candidate[];
+};
+
 export type UIPalette = {
   key: string;
   keyForeground: string;
@@ -32,6 +48,12 @@ export type UIPalette = {
   contrast: number;
 };
 
+export type TemplatePaletteState = {
+  rawKey: string;
+  palette: UIPalette;
+  baselinePalette?: UIPalette;
+};
+
 export type ImageAnalysis = {
   id: string;
   name: string;
@@ -40,11 +62,74 @@ export type ImageAnalysis = {
   height: number;
   rawKey: string;
   candidates: Candidate[];
+  regionCandidates?: RegionCandidates;
   palette: UIPalette;
+  templatePalettes?: Partial<Record<TemplateKind, TemplatePaletteState>>;
   status: "pending" | "approved" | "needs-work";
   category?: string;
   sourcePage?: string;
+  originalBytes?: number;
+  storageBytes?: number;
+  optimized?: boolean;
+  reviewedAt?: string;
+  reviewHistory?: ReviewEvent[];
 };
+
+export type ReviewEvent = {
+  status: ImageAnalysis["status"];
+  at: string;
+  reason: "manual" | "bulk" | "palette-changed";
+};
+
+export type ContrastCheck = {
+  id: string;
+  label: string;
+  foreground: string;
+  background: string;
+  ratio: number;
+  required: number;
+  pass: boolean;
+};
+
+export type PaletteQuality = {
+  score: number;
+  level: "safe" | "review" | "risk";
+  issues: string[];
+  checks: ContrastCheck[];
+};
+
+export type PaletteAlternative = {
+  id: "mood" | "brand" | "readability";
+  label: string;
+  description: string;
+  rawKey: string;
+  palette: UIPalette;
+  score: number;
+};
+
+export const needsExceptionReview = (
+  analysis: ImageAnalysis,
+  quality: PaletteQuality | undefined,
+) => analysis.status === "pending" && quality?.level !== "safe";
+
+export const applyReviewStatus = (
+  analysis: ImageAnalysis,
+  status: ImageAnalysis["status"],
+  reason: ReviewEvent["reason"] = "manual",
+): ImageAnalysis => {
+  if (analysis.status === status) return analysis;
+  const at = new Date().toISOString();
+  return {
+    ...analysis,
+    status,
+    reviewedAt: status === "pending" ? undefined : at,
+    reviewHistory: [...(analysis.reviewHistory ?? []), { status, at, reason }].slice(-20),
+  };
+};
+
+export const invalidateReview = (analysis: ImageAnalysis): ImageAnalysis => analysis.status === "pending"
+  ? analysis
+  : applyReviewStatus(analysis, "pending", "palette-changed");
 
 type LabPoint = {
   l: number;
@@ -144,6 +229,8 @@ export const contrastRatio = (a: string, b: string) => {
   return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
 };
 
+const roundedContrast = (a: string, b: string) => Number(contrastRatio(a, b).toFixed(2));
+
 const chooseText = (background: string, minContrast: number) => {
   const dark = "#151514";
   const light = "#FFFFFF";
@@ -232,6 +319,70 @@ export const buildPalette = (rawHex: string, tuning: Tuning): UIPalette => {
     accentForeground,
     border,
     contrast: Number(text.ratio.toFixed(2)),
+  };
+};
+
+export const applyBrandRules = (palette: UIPalette, brand?: BrandRules): UIPalette => {
+  if (!brand?.enabled || !brand.lockedRoles.length) return palette;
+  const next = { ...palette };
+  brand.lockedRoles.forEach((role) => {
+    const value = brand.colors[role];
+    if (value && /^#[0-9a-f]{6}$/i.test(value)) next[role] = value.toUpperCase();
+  });
+
+  if (brand.lockedRoles.includes("key") && !brand.lockedRoles.includes("keyForeground")) {
+    next.keyForeground = chooseText(next.key, 4.5).primary;
+  }
+  if (brand.lockedRoles.includes("accent") && !brand.lockedRoles.includes("accentForeground")) {
+    next.accentForeground = chooseText(next.accent, 4.5).primary;
+  }
+  next.contrast = roundedContrast(next.textPrimary, next.gradientBottom);
+  return next;
+};
+
+export const buildContrastMatrix = (palette: UIPalette, minContrast = 4.5): ContrastCheck[] => [
+  ["body", "본문 / 배경", palette.textPrimary, palette.gradientBottom, minContrast],
+  ["muted", "보조문 / 배경", palette.textSecondary, palette.gradientBottom, Math.min(minContrast, 4.5)],
+  ["key", "라벨 / Key", palette.keyForeground, palette.key, 4.5],
+  ["accent", "버튼 / Accent", palette.accentForeground, palette.accent, 4.5],
+  ["key-surface", "Key / Surface", palette.key, palette.surface, 3],
+  ["border", "Border / Surface", palette.border, palette.surface, 1.5],
+].map(([id, label, foreground, background, required]) => {
+  const ratio = roundedContrast(String(foreground), String(background));
+  return {
+    id: String(id),
+    label: String(label),
+    foreground: String(foreground),
+    background: String(background),
+    ratio,
+    required: Number(required),
+    pass: ratio >= Number(required),
+  };
+});
+
+export const evaluatePalette = (
+  palette: UIPalette,
+  candidates: Candidate[] = [],
+  minContrast = 4.5,
+): PaletteQuality => {
+  const checks = buildContrastMatrix(palette, minContrast);
+  const essential = checks.slice(0, 4);
+  const optional = checks.slice(4);
+  const essentialScore = essential.filter((check) => check.pass).length / essential.length;
+  const optionalScore = optional.filter((check) => check.pass).length / optional.length;
+  const candidate = candidates[0];
+  const candidateScore = candidate
+    ? clamp(candidate.score / 0.72, 0, 1) * 0.65 + clamp(candidate.share / 0.22, 0, 1) * 0.35
+    : 0.5;
+  const score = Math.round(essentialScore * 68 + optionalScore * 12 + candidateScore * 20);
+  const issues = essential.filter((check) => !check.pass).map((check) => `${check.label} 대비`);
+  if (candidate && candidate.score < 0.32) issues.push("대표색 신뢰도");
+  if (candidate && candidate.chroma < 0.025) issues.push("대표색 채도");
+  return {
+    score,
+    level: issues.length === 0 && score >= 82 ? "safe" : score >= 65 ? "review" : "risk",
+    issues,
+    checks,
   };
 };
 
@@ -339,6 +490,58 @@ const extractCandidates = (data: Uint8ClampedArray, width: number, height: numbe
   }).sort((a, b) => b.score - a.score);
 };
 
+const candidatesForTemplate = (analysis: ImageAnalysis, template: TemplateKind) => {
+  if (!analysis.regionCandidates) return analysis.candidates;
+  return template === "banner" ? analysis.regionCandidates.left : analysis.regionCandidates.bottom;
+};
+
+export const recommendedRawKey = (analysis: ImageAnalysis, template: TemplateKind) =>
+  candidatesForTemplate(analysis, template)[0]?.hex ?? analysis.candidates[0]?.hex ?? analysis.rawKey;
+
+const colorDistance = (a: string, b: string) => {
+  const first = rgbToOklab(hexToRgb(a));
+  const second = rgbToOklab(hexToRgb(b));
+  return (first.l - second.l) ** 2 + (first.a - second.a) ** 2 + (first.b - second.b) ** 2;
+};
+
+export const buildPaletteAlternatives = (
+  analysis: ImageAnalysis,
+  tuning: Tuning,
+  template: TemplateKind,
+  brand?: BrandRules,
+): PaletteAlternative[] => {
+  const regional = candidatesForTemplate(analysis, template);
+  const pool = regional.length ? regional : analysis.candidates;
+  const moodRaw = pool[0]?.hex ?? analysis.rawKey;
+  const brandTarget = brand?.colors.key;
+  const brandRaw = brandTarget && pool.length
+    ? [...pool].sort((a, b) => colorDistance(a.hex, brandTarget) - colorDistance(b.hex, brandTarget))[0].hex
+    : pool[1]?.hex ?? moodRaw;
+  const readabilityRaw = pool.length
+    ? [...pool].sort((a, b) => {
+      const aScore = evaluatePalette(applyBrandRules(buildPalette(a.hex, tuning), brand), [a], tuning.minContrast).score;
+      const bScore = evaluatePalette(applyBrandRules(buildPalette(b.hex, tuning), brand), [b], tuning.minContrast).score;
+      return bScore - aScore;
+    })[0].hex
+    : moodRaw;
+  const configs: Array<[PaletteAlternative["id"], string, string, string]> = [
+    ["mood", "분위기", template === "banner" ? "이미지 왼쪽 연결부 기준" : "이미지 하단 연결부 기준", moodRaw],
+    ["brand", "브랜드", brand?.enabled ? "잠긴 브랜드 색을 우선 적용" : "브랜드에 가까운 보조 후보", brandRaw],
+    ["readability", "가독성", "대비 점수가 가장 높은 조합", readabilityRaw],
+  ];
+  return configs.map(([id, label, description, rawKey]) => {
+    const palette = applyBrandRules(buildPalette(rawKey, tuning), brand);
+    return {
+      id,
+      label,
+      description,
+      rawKey,
+      palette,
+      score: evaluatePalette(palette, pool.filter((candidate) => candidate.hex === rawKey), tuning.minContrast).score,
+    };
+  });
+};
+
 export const analyzeImage = (name: string, dataUrl: string, tuning: Tuning): Promise<ImageAnalysis> =>
   new Promise((resolve, reject) => {
     const image = new Image();
@@ -356,6 +559,13 @@ export const analyzeImage = (name: string, dataUrl: string, tuning: Tuning): Pro
       context.drawImage(image, 0, 0, width, height);
       const pixels = context.getImageData(0, 0, width, height).data;
       const candidates = extractCandidates(pixels, width, height, tuning.ignoreNearNeutral);
+      const bottomY = Math.max(0, Math.floor(height * 0.64));
+      const bottomHeight = Math.max(1, height - bottomY);
+      const leftWidth = Math.max(1, Math.ceil(width * 0.36));
+      const bottomPixels = context.getImageData(0, bottomY, width, bottomHeight).data;
+      const leftPixels = context.getImageData(0, 0, leftWidth, height).data;
+      const bottom = extractCandidates(bottomPixels, width, bottomHeight, tuning.ignoreNearNeutral);
+      const left = extractCandidates(leftPixels, leftWidth, height, tuning.ignoreNearNeutral);
       const rawKey = candidates[0]?.hex ?? "#7C6FE8";
       resolve({
         id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
@@ -365,6 +575,7 @@ export const analyzeImage = (name: string, dataUrl: string, tuning: Tuning): Pro
         height: image.naturalHeight,
         rawKey,
         candidates,
+        regionCandidates: { full: candidates, bottom, left },
         palette: buildPalette(rawKey, tuning),
         status: "pending",
       });
@@ -373,10 +584,72 @@ export const analyzeImage = (name: string, dataUrl: string, tuning: Tuning): Pro
     image.src = dataUrl;
   });
 
-export const retuneAnalysis = (analysis: ImageAnalysis, tuning: Tuning): ImageAnalysis => ({
+export const retuneAnalysis = (
+  analysis: ImageAnalysis,
+  tuning: Tuning,
+  options?: { template?: TemplateKind; brand?: BrandRules; preserveRawKey?: boolean },
+): ImageAnalysis => {
+  const rawKey = options?.template && !options.preserveRawKey
+    ? recommendedRawKey(analysis, options.template)
+    : analysis.rawKey;
+  return {
+    ...analysis,
+    rawKey,
+    palette: applyBrandRules(buildPalette(rawKey, tuning), options?.brand),
+  };
+};
+
+export const saveTemplatePalette = (
+  analysis: ImageAnalysis,
+  template: TemplateKind,
+  rawKey = analysis.rawKey,
+  palette = analysis.palette,
+  options?: { resetBaseline?: boolean },
+): ImageAnalysis => ({
   ...analysis,
-  palette: buildPalette(analysis.rawKey, tuning),
+  rawKey,
+  palette,
+  templatePalettes: {
+    ...analysis.templatePalettes,
+    [template]: {
+      rawKey,
+      palette: { ...palette },
+      baselinePalette: options?.resetBaseline
+        ? { ...palette }
+        : analysis.templatePalettes?.[template]?.baselinePalette ?? { ...palette },
+    },
+  },
 });
+
+export const switchTemplatePalette = (
+  analysis: ImageAnalysis,
+  currentTemplate: TemplateKind,
+  nextTemplate: TemplateKind,
+  tuning: Tuning,
+  brand?: BrandRules,
+): ImageAnalysis => {
+  const withCurrent = saveTemplatePalette(analysis, currentTemplate);
+  const saved = withCurrent.templatePalettes?.[nextTemplate];
+  if (saved) return saveTemplatePalette(withCurrent, nextTemplate, saved.rawKey, saved.palette);
+  const generated = retuneAnalysis(withCurrent, tuning, { template: nextTemplate, brand });
+  return saveTemplatePalette(generated, nextTemplate, generated.rawKey, generated.palette, { resetBaseline: true });
+};
+
+export const paletteToTailwind = (palette: UIPalette) => JSON.stringify({
+  theme: {
+    extend: {
+      colors: Object.fromEntries(Object.entries(palette)
+        .filter(([, value]) => typeof value === "string")
+        .map(([key, value]) => [`ui-${key.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}`, value])),
+    },
+  },
+}, null, 2);
+
+export const paletteToFigmaTokens = (palette: UIPalette) => JSON.stringify({
+  color: Object.fromEntries(Object.entries(palette)
+    .filter(([, value]) => typeof value === "string")
+    .map(([key, value]) => [key, { $type: "color", $value: value }])),
+}, null, 2);
 
 export const paletteToCss = (palette: UIPalette) => `:root {\n${[
   ["ui-key", palette.key],

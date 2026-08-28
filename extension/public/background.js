@@ -32,7 +32,10 @@ async function openStudio(params = {}, sourceTab) {
   await chrome.tabs.create({ url: url.href });
 }
 
-chrome.runtime.onInstalled.addListener(() => {
+chrome.runtime.onInstalled.addListener((details) => {
+  if (details?.reason === "update") {
+    void chrome.storage.local.set({ "ui-color-updated-version": chrome.runtime.getManifest().version });
+  }
   chrome.contextMenus.removeAll(() => {
     chrome.contextMenus.create({
       id: IMAGE_MENU_ID,

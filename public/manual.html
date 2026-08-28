@@ -158,7 +158,7 @@
 
     <main>
       <div class="hero">
-        <span class="eyebrow">USER MANUAL · v1.1</span>
+        <span class="eyebrow">USER MANUAL · v1.2</span>
         <h1>사진을 넣고,<br />UI 색상으로 바꾸는 방법</h1>
         <p>대표색 추출부터 텍스트 대비, 상품·콘텐츠·배너 미리보기, 대량 검수와 개발용 내보내기까지 한 번에 설명합니다.</p>
         <div class="hero-meta"><span>AI·API 키 불필요</span><span>브라우저 내부 처리</span><span>테스트 이미지 50장 포함</span></div>
@@ -177,7 +177,7 @@
         <h2>2. 빠른 시작</h2>
         <div class="steps">
           <div class="step"><div><strong>이미지 넣기</strong><span>상단 영역에 JPG·PNG·WebP 파일을 끌어놓거나 ‘이미지 선택’을 누릅니다. 여러 장을 동시에 선택할 수 있습니다.</span></div></div>
-          <div class="step"><div><strong>대표색 확인</strong><span>오른쪽 UI 팔레트에서 RAW KEY와 CORRECTED 값을 비교합니다. 후보색을 누르면 대표색을 교체할 수 있습니다.</span></div></div>
+          <div class="step"><div><strong>추천 3안 확인</strong><span>오른쪽에서 분위기·브랜드·가독성 3안을 비교합니다. 상품·콘텐츠는 이미지 하단, 배너는 왼쪽 연결부 색을 우선 분석합니다.</span></div></div>
           <div class="step"><div><strong>문구와 템플릿 검수</strong><span>왼쪽에서 제목·설명·버튼 문구를 입력하고, 상품·콘텐츠·배너 유형을 전환해 실제 적용 모습을 봅니다.</span></div></div>
           <div class="step"><div><strong>보정 또는 승인</strong><span>채도·색온도·표면 틴트·최소 대비를 조정한 뒤 결과를 승인하거나 ‘보정 필요’로 기록합니다.</span></div></div>
           <div class="step"><div><strong>결과 내보내기</strong><span>‘CSS 복사’로 현재 팔레트를 복사하거나 ‘프로젝트 JSON’으로 이미지와 모든 분석 결과를 저장합니다.</span></div></div>
@@ -188,11 +188,12 @@
         <h2>3. 화면 구성</h2>
         <div class="grid">
           <div class="card"><strong>보정 로직</strong><p>색의 분위기를 조정하는 프로필과 슬라이더가 있습니다.</p></div>
+          <div class="card"><strong>브랜드 역할색</strong><p>Key·Accent·Surface 또는 개별 역할을 잠가 재분석과 일괄 적용에서도 유지합니다.</p></div>
           <div class="card"><strong>텍스트 입력</strong><p>라벨·제목·설명·메타 정보·버튼 문구를 실제 콘텐츠로 교체합니다.</p></div>
           <div class="card"><strong>라이브 미리보기</strong><p>상품·콘텐츠·배너에서 이미지와 색이 자연스럽게 연결되는지 확인합니다.</p></div>
           <div class="card"><strong>UI 팔레트</strong><p>역할별 색상과 HEX 값을 확인하고 직접 미세 조정합니다.</p></div>
           <div class="card"><strong>필름 스트립</strong><p>여러 이미지 사이를 빠르게 이동합니다. 색 띠는 각 이미지의 대표색입니다.</p></div>
-          <div class="card"><strong>배치 검수</strong><p>여러 이미지의 결과를 한 화면에서 비교하고 승인 여부를 기록합니다.</p></div>
+          <div class="card"><strong>배치 검수</strong><p>신뢰도와 예외 필터로 검토가 필요한 결과만 골라 승인 여부를 기록합니다.</p></div>
         </div>
       </section>
 
@@ -230,6 +231,7 @@
           </tbody>
         </table>
         <p class="lead">텍스트는 무조건 검정이 아닙니다. 각 배경에서 짙은 검정과 흰색의 대비를 비교해 더 읽기 좋은 색을 자동 선택합니다.</p>
+        <div class="note">대비 매트릭스는 본문·보조문·Key·Accent·Surface·Border 조합을 한 번에 검사하며, 결과를 0–100 신뢰도 점수로 표시합니다.</div>
       </section>
 
       <section id="preview">
@@ -240,6 +242,7 @@
           <div class="card"><strong>배너</strong><p>데스크톱은 좌우 경계 15%, 모바일은 상하 경계 15% 범위에서만 이미지가 자연스럽게 섞입니다.</p></div>
           <div class="card"><strong>대비 표시</strong><p>본문의 실제 명암비와 WCAG AA 통과 여부를 미리보기 아래에서 확인합니다.</p></div>
         </div>
+        <div class="note">썸네일을 클릭하면 선택한 이미지의 미리보기와 팔레트만 바뀝니다. 썸네일 순서와 가로 스크롤 위치는 유지되며, 양쪽 화살표로 목록만 이동할 수 있습니다. 상품·콘텐츠·배너에서 직접 수정한 팔레트도 유형별로 따로 기억됩니다.</div>
         <div class="note">경계가 선처럼 보이면 브라우저를 강력 새로고침하십시오. Windows Chrome 기준 <code>Ctrl + Shift + R</code>입니다.</div>
       </section>
 
@@ -249,10 +252,16 @@
         <div class="grid">
           <div class="card"><strong>카테고리 구성</strong><p>과일 10 · 야채 10 · 한식 10 · 양식 10 · 중식 10</p></div>
           <div class="card"><strong>빠른 비교</strong><p>대표색, 표면색, 본문색, 강조색과 텍스트색을 카드별로 비교합니다.</p></div>
-          <div class="card"><strong>검수 기록</strong><p>‘승인’ 또는 ‘보정’을 선택하면 현재 프로젝트에 자동 저장됩니다.</p></div>
+          <div class="card"><strong>검수 기록</strong><p>‘승인’ 또는 ‘보정’을 선택하면 다음 예외로 자동 이동합니다. 잘못 판정한 결과는 ‘미검수’로 되돌릴 수 있습니다.</p></div>
+          <div class="card"><strong>예외 중심 검수</strong><p>‘예외 검수’에는 아직 처리하지 않은 대비 실패·낮은 신뢰도 결과만 표시됩니다. 승인하거나 보정으로 지정하면 예외 검수 수가 줄고 해당 상태 필터로 이동합니다.</p></div>
+          <div class="card"><strong>일괄 적용</strong><p>현재 템플릿·보정·브랜드 규칙을 프로젝트의 모든 이미지에 한 번에 다시 적용합니다.</p></div>
+          <div class="card"><strong>선택 항목 작업</strong><p>체크박스로 필요한 카드만 고른 뒤 규칙 적용·승인·보정 판정을 한 번에 처리합니다.</p></div>
+          <div class="card"><strong>검수 단축키</strong><p>스튜디오에서 A는 승인, R은 보정 필요, 좌우 화살표는 이전·다음 이미지를 선택합니다.</p></div>
+          <div class="card"><strong>집중 검수</strong><p>큰 이미지와 품질 이슈만 보면서 A·R 키로 판정하고 다음 예외로 자동 이동합니다.</p></div>
+          <div class="card"><strong>선택 결과 내보내기</strong><p>고른 이미지의 팔레트를 CSS, Tailwind JSON 또는 Figma Tokens JSON으로 한 번에 저장합니다.</p></div>
           <div class="card"><strong>원본 출처</strong><p>리서치 이미지 카드의 Wikimedia Commons 링크에서 원본과 라이선스를 확인할 수 있습니다.</p></div>
         </div>
-        <div class="note">첫 분석 결과는 IndexedDB에 캐시됩니다. 다음 프로젝트에서 같은 무채색 제외 설정으로 불러오면 50장을 다시 계산하지 않고 캐시를 사용합니다.</div>
+        <div class="note">승인 이후 팔레트·보정·템플릿을 변경하면 결과의 신뢰성을 위해 자동으로 미검수 상태로 돌아갑니다. 첫 분석 결과는 IndexedDB에 캐시되어 다음 프로젝트에서 다시 계산하지 않고 사용할 수 있습니다.</div>
       </section>
 
       <section id="export">
@@ -280,6 +289,12 @@
           <div class="card"><strong>JSON 백업·복원</strong><p>‘프로젝트 JSON’으로 백업하고 ‘JSON 불러오기’로 다른 PC나 브라우저에서 복원합니다.</p></div>
           <div class="card"><strong>삭제·초기화</strong><p>‘현재 삭제’는 선택 프로젝트만, ‘전체 초기화’는 모든 프로젝트와 테스트 캐시를 삭제합니다.</p></div>
           <div class="card"><strong>자동 저장 상태</strong><p>상단에 ‘자동 저장 중’ 또는 ‘자동 저장됨’으로 현재 저장 상태가 표시됩니다.</p></div>
+          <div class="card"><strong>저장 용량·백업 경고</strong><p>브라우저 사용량을 확인하고, 마지막 JSON 저장 뒤 변경이 생기면 다시 백업하라는 표시를 봅니다.</p></div>
+          <div class="card"><strong>이미지 자동 최적화</strong><p>큰 업로드 이미지는 긴 변 1600px WebP로 줄여 브라우저 저장공간을 절약합니다. 원본 크기와 저장 크기는 프로젝트에 기록됩니다.</p></div>
+          <div class="card"><strong>프로젝트별 용량</strong><p>프로젝트 선택 목록에서 이미지 수와 사용 용량을 확인하고, 필요 없는 프로젝트는 현재 삭제로 정리합니다.</p></div>
+          <div class="card"><strong>검수 이력</strong><p>승인·보정·미검수 복귀 시간과 사유를 이미지별 최근 20건까지 저장합니다.</p></div>
+          <div class="card"><strong>브랜드 프리셋</strong><p>브랜드 이름·역할색·잠금 설정을 저장해 다른 프로젝트에서도 다시 적용합니다.</p></div>
+          <div class="card"><strong>실행 취소·복원 버전</strong><p>Ctrl+Z로 팔레트 작업을 되돌리고, 일괄 작업 전에는 최근 5개 복원 버전에 자동 백업합니다.</p></div>
           <div class="card"><strong>테스트 50장 캐시</strong><p>첫 분석 결과를 무채색 제외 설정별로 저장하여 다음 실행부터 빠르게 불러옵니다.</p></div>
         </div>
         <div class="note warning">시크릿 모드, 브라우저 데이터 삭제, 다른 브라우저·PC에서는 IndexedDB가 이어지지 않습니다. 중요한 작업은 반드시 프로젝트 JSON으로 별도 백업하십시오.</div>
