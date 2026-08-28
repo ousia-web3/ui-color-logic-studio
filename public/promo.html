@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="UI 컬러 로직 스튜디오 9:16 소개 카드 6종" />
+  <title>컬러 로직 소개 카드 6종</title>
+  <style>
+    :root { color-scheme: light; --ink: #171914; --line: #dfe1d9; --lime: #e6f66e; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f1f2ee; color: var(--ink); font-family: "Pretendard Variable", Pretendard, "Malgun Gothic", "Segoe UI", sans-serif; }
+    button, a { font: inherit; }
+    .topbar { position: sticky; top: 0; z-index: 10; min-height: 68px; padding: 12px max(20px, calc((100vw - 1320px) / 2)); display: flex; align-items: center; justify-content: space-between; gap: 18px; border-bottom: 1px solid rgba(22, 25, 18, .08); background: rgba(255, 255, 255, .9); backdrop-filter: blur(18px); }
+    .brand { display: flex; align-items: center; gap: 11px; }
+    .mark { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 12px; background: var(--lime); font-weight: 900; }
+    .brand strong, .brand span { display: block; }
+    .brand strong { font-size: 14px; }
+    .brand span { margin-top: 2px; color: #7c8178; font-size: 11px; }
+    .actions { display: flex; gap: 8px; }
+    .button { min-height: 38px; padding: 0 14px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid var(--line); border-radius: 10px; color: var(--ink); background: #fff; text-decoration: none; cursor: pointer; }
+    .button.primary { border-color: #1d201a; color: #fff; background: #1d201a; }
+    .intro { max-width: 1320px; margin: 0 auto; padding: 58px 20px 30px; }
+    .eyebrow { color: #768042; font-size: 12px; font-weight: 800; letter-spacing: .12em; }
+    h1 { max-width: 760px; margin: 12px 0 14px; font-size: clamp(34px, 4.5vw, 64px); line-height: 1.05; letter-spacing: -.055em; word-break: keep-all; }
+    .intro p { max-width: 720px; margin: 0; color: #70746c; font-size: 15px; line-height: 1.7; word-break: keep-all; }
+    .specs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+    .specs span { padding: 7px 10px; border: 1px solid #dde0d5; border-radius: 999px; color: #62675e; background: rgba(255,255,255,.72); font-size: 11px; }
+    .grid { max-width: 1320px; margin: 0 auto; padding: 16px 20px 80px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
+    figure { margin: 0; min-width: 0; }
+    .canvas-shell { padding: 8px; border: 1px solid #dfe1da; border-radius: 26px; background: #fff; box-shadow: 0 20px 55px rgba(27, 31, 22, .08); }
+    canvas { width: 100%; height: auto; display: block; border-radius: 19px; background: #fff; aspect-ratio: 9 / 16; }
+    figcaption { padding: 12px 2px 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .caption-copy { min-width: 0; }
+    .caption-copy strong, .caption-copy span { display: block; }
+    .caption-copy strong { font-size: 12px; }
+    .caption-copy span { margin-top: 3px; color: #888c83; font-size: 10px; }
+    .save { flex: 0 0 auto; min-height: 34px; padding: 0 11px; border: 1px solid #d9dcd3; border-radius: 9px; background: #fff; color: #555b51; font-size: 10px; font-weight: 700; cursor: pointer; }
+    .save:hover { border-color: #9ba45f; background: #f7fadd; }
+    .status { max-width: 1320px; margin: -50px auto 50px; padding: 0 20px; color: #7d8179; font-size: 11px; }
+    @media (max-width: 980px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 620px) {
+      .topbar { padding: 10px 12px; }
+      .brand span, .actions .wide { display: none; }
+      .button { padding: 0 11px; }
+      .intro { padding: 38px 16px 18px; }
+      .grid { grid-template-columns: 1fr; padding: 12px 14px 68px; gap: 26px; }
+      .canvas-shell { border-radius: 22px; }
+      canvas { border-radius: 16px; }
+    }
+    @media print {
+      .topbar, .intro, figcaption, .status { display: none !important; }
+      body { background: #fff; }
+      .grid { display: block; max-width: none; padding: 0; }
+      figure { break-after: page; }
+      .canvas-shell { padding: 0; border: 0; border-radius: 0; box-shadow: none; }
+      canvas { width: 100vw; height: 100vh; border-radius: 0; object-fit: contain; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><div class="mark">C</div><div><strong>Color Logic Cards</strong><span>9:16 소개 이미지 6종</span></div></div>
+    <div class="actions"><a class="button wide" href="/manual.html">사용 매뉴얼</a><a class="button primary" href="/">스튜디오 열기</a></div>
+  </header>
+
+  <main>
+    <section class="intro">
+      <div class="eyebrow">STORE LISTING · SHORTS · 9:16</div>
+      <h1>컬러 추출 기능을 한 장씩<br />명확하게 소개합니다.</h1>
+      <p>Google Play 등록 이미지처럼 한 카드에 한 가지 기능만 담았습니다. 각 카드는 실제 1080×1920 해상도로 렌더링되며 PNG로 따로 저장할 수 있습니다.</p>
+      <div class="specs"><span>1080 × 1920 px</span><span>PNG 개별 저장</span><span>한글 텍스트 선명</span><span>카드별 독립 구성</span></div>
+    </section>
+
+    <section class="grid" aria-label="9:16 소개 카드 6종">
+      <figure><div class="canvas-shell"><canvas id="card-1" width="1080" height="1920" aria-label="사진 한 장에서 UI 컬러 완성"></canvas></div><figcaption><div class="caption-copy"><strong>01 · 이미지에서 팔레트 추출</strong><span>대표 기능 소개</span></div><button class="save" data-card="card-1" data-name="color-logic-card-01.png">PNG 저장</button></figcaption></figure>
+      <figure><div class="canvas-shell"><canvas id="card-2" width="1080" height="1920" aria-label="대표색을 UI 안전 범위로 보정"></canvas></div><figcaption><div class="caption-copy"><strong>02 · RAW 색상 자동 보정</strong><span>보정 로직 소개</span></div><button class="save" data-card="card-2" data-name="color-logic-card-02.png">PNG 저장</button></figcaption></figure>
+      <figure><div class="canvas-shell"><canvas id="card-3" width="1080" height="1920" aria-label="텍스트 색상 자동 적용"></canvas></div><figcaption><div class="caption-copy"><strong>03 · 텍스트 대비 자동 계산</strong><span>가독성 소개</span></div><button class="save" data-card="card-3" data-name="color-logic-card-03.png">PNG 저장</button></figcaption></figure>
+      <figure><div class="canvas-shell"><canvas id="card-4" width="1080" height="1920" aria-label="이미지와 UI를 자연스럽게 연결"></canvas></div><figcaption><div class="caption-copy"><strong>04 · 자연스러운 그라데이션</strong><span>미리보기 소개</span></div><button class="save" data-card="card-4" data-name="color-logic-card-04.png">PNG 저장</button></figcaption></figure>
+      <figure><div class="canvas-shell"><canvas id="card-5" width="1080" height="1920" aria-label="테스트 이미지 50장 배치 검수"></canvas></div><figcaption><div class="caption-copy"><strong>05 · 테스트 이미지 50장</strong><span>빠른 반복 검수</span></div><button class="save" data-card="card-5" data-name="color-logic-card-05.png">PNG 저장</button></figcaption></figure>
+      <figure><div class="canvas-shell"><canvas id="card-6" width="1080" height="1920" aria-label="CSS와 JSON으로 바로 적용"></canvas></div><figcaption><div class="caption-copy"><strong>06 · 업무용 결과 내보내기</strong><span>CSS · JSON · 로컬 실행</span></div><button class="save" data-card="card-6" data-name="color-logic-card-06.png">PNG 저장</button></figcaption></figure>
+    </section>
+    <div class="status" id="status" aria-live="polite">카드를 렌더링하고 있습니다…</div>
+  </main>
+
+  <script>
+    const W = 1080;
+    const H = 1920;
+    const FONT = '"Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif';
+    const PHOTO_PATHS = {
+      apple: "/test-images/fruit-01.webp",
+      bibimbap: "/test-images/korean-01.webp",
+      pasta: "/test-images/western-02.webp",
+      mapo: "/test-images/chinese-02.webp",
+      broccoli: "/test-images/vegetable-03.webp",
+      grape: "/test-images/fruit-05.webp",
+      pizza: "/test-images/western-01.webp"
+    };
+
+    function loadPhoto(src) {
+      return new Promise((resolve) => {
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = () => resolve(null);
+        image.src = src;
+      });
+    }
+
+    function rounded(ctx, x, y, w, h, r, fill, stroke = null, lineWidth = 1) {
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, r);
+      if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+      if (stroke) { ctx.lineWidth = lineWidth; ctx.strokeStyle = stroke; ctx.stroke(); }
+    }
+
+    function circle(ctx, x, y, radius, fill, stroke = null, lineWidth = 1) {
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+      if (stroke) { ctx.lineWidth = lineWidth; ctx.strokeStyle = stroke; ctx.stroke(); }
+    }
+
+    function cover(ctx, image, x, y, w, h, radius = 0) {
+      if (!image) { rounded(ctx, x, y, w, h, radius, "#dfe2da"); return; }
+      const scale = Math.max(w / image.width, h / image.height);
+      const sw = w / scale;
+      const sh = h / scale;
+      const sx = (image.width - sw) / 2;
+      const sy = (image.height - sh) / 2;
+      ctx.save();
+      if (radius) { ctx.beginPath(); ctx.roundRect(x, y, w, h, radius); ctx.clip(); }
+      ctx.drawImage(image, sx, sy, sw, sh, x, y, w, h);
+      ctx.restore();
+    }
+
+    function text(ctx, value, x, y, size, weight, color, align = "left") {
+      ctx.font = `${weight} ${size}px ${FONT}`;
+      ctx.fillStyle = color;
+      ctx.textAlign = align;
+      ctx.textBaseline = "alphabetic";
+      ctx.fillText(value, x, y);
+    }
+
+    function headline(ctx, lines, x, y, color = "#171914", size = 96, lineHeight = 1.14) {
+      lines.forEach((line, index) => text(ctx, line, x, y + index * size * lineHeight, size, 800, color));
+    }
+
+    function header(ctx, index, color = "#171914", pill = "#E6F66E") {
+      text(ctx, "COLOR LOGIC STUDIO", 78, 92, 25, 800, color);
+      rounded(ctx, 884, 52, 118, 60, 30, pill);
+      text(ctx, String(index).padStart(2, "0"), 943, 93, 24, 900, "#171914", "center");
+    }
+
+    function footer(ctx, label, color = "#171914") {
+      text(ctx, label, 78, 1824, 25, 700, color);
+      circle(ctx, 968, 1815, 10, color);
+      circle(ctx, 1000, 1815, 10, color);
+    }
+
+    function shadow(ctx, blur = 45, color = "rgba(21, 27, 16, .18)", offsetY = 18) {
+      ctx.shadowBlur = blur;
+      ctx.shadowColor = color;
+      ctx.shadowOffsetY = offsetY;
+    }
+
+    function clearShadow(ctx) {
+      ctx.shadowBlur = 0;
+      ctx.shadowColor = "transparent";
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+    }
+
+    function drawCard1(ctx, images) {
+      ctx.fillStyle = "#F5F1E8"; ctx.fillRect(0, 0, W, H);
+      header(ctx, 1);
+      headline(ctx, ["사진 한 장에서", "UI 컬러 완성"], 78, 260, "#171914", 102);
+      text(ctx, "대표색부터 배경·텍스트·버튼까지", 82, 510, 34, 500, "#66685F");
+      shadow(ctx, 54, "rgba(58, 45, 30, .2)", 22);
+      rounded(ctx, 74, 592, 932, 858, 62, "#FFFFFF"); clearShadow(ctx);
+      cover(ctx, images.apple, 100, 618, 880, 560, 42);
+      const g = ctx.createLinearGradient(0, 1010, 0, 1180);
+      g.addColorStop(0, "rgba(255,255,255,0)"); g.addColorStop(1, "#FFFFFF");
+      ctx.fillStyle = g; ctx.fillRect(100, 985, 880, 200);
+      text(ctx, "빨간 사과", 130, 1240, 30, 800, "#20221D");
+      text(ctx, "이미지 분위기를 유지한 역할별 팔레트", 130, 1290, 25, 500, "#75796F");
+      ["#A83B32", "#E7C5B3", "#F5E8DE", "#8F6C2A", "#171914"].forEach((color, i) => circle(ctx, 152 + i * 134, 1374, 46, color, "rgba(20,20,18,.08)", 2));
+      rounded(ctx, 760, 1334, 184, 82, 41, "#E6F66E");
+      text(ctx, "10 COLORS", 852, 1386, 22, 900, "#171914", "center");
+      rounded(ctx, 124, 1522, 832, 134, 32, "#1C1F19");
+      text(ctx, "이미지 선택", 184, 1607, 30, 800, "#FFFFFF");
+      text(ctx, "→", 900, 1609, 38, 700, "#E6F66E", "center");
+      footer(ctx, "이미지를 UI 컬러 시스템으로");
+    }
+
+    function drawCard2(ctx, images) {
+      ctx.fillStyle = "#F3C8A8"; ctx.fillRect(0, 0, W, H);
+      header(ctx, 2, "#2A201B", "#FFFFFF");
+      headline(ctx, ["대표색은", "그대로 쓰지 않아요"], 78, 260, "#2A201B", 100);
+      text(ctx, "색상각은 살리고 UI 안전 범위로 이동", 82, 510, 32, 600, "#715345");
+      shadow(ctx, 50, "rgba(79, 42, 21, .2)", 20);
+      rounded(ctx, 75, 606, 930, 900, 58, "#FFF9F4"); clearShadow(ctx);
+      cover(ctx, images.bibimbap, 107, 638, 866, 518, 38);
+      rounded(ctx, 132, 1110, 816, 254, 34, "#FFFFFF", "#E8DED7", 2);
+      text(ctx, "RAW KEY", 176, 1175, 22, 800, "#999087");
+      text(ctx, "CORRECTED", 628, 1175, 22, 800, "#999087");
+      rounded(ctx, 176, 1210, 240, 92, 26, "#98714F");
+      rounded(ctx, 628, 1210, 240, 92, 26, "#B86631");
+      text(ctx, "#98714F", 296, 1268, 25, 800, "#FFFFFF", "center");
+      text(ctx, "#B86631", 748, 1268, 25, 800, "#FFFFFF", "center");
+      text(ctx, "→", 522, 1270, 46, 600, "#BBB1A8", "center");
+      rounded(ctx, 132, 1395, 816, 74, 37, "#F3E8DF");
+      text(ctx, "균형형", 206, 1443, 23, 800, "#492F20", "center");
+      text(ctx, "소프트", 408, 1443, 23, 700, "#8B7668", "center");
+      text(ctx, "볼드", 610, 1443, 23, 700, "#8B7668", "center");
+      text(ctx, "다크", 812, 1443, 23, 700, "#8B7668", "center");
+      rounded(ctx, 154, 1580, 772, 92, 46, "#2B211C");
+      text(ctx, "채도 · 색온도 · 표면 틴트 미세 조정", 540, 1638, 27, 700, "#FFFFFF", "center");
+      footer(ctx, "사진마다 달라도 일관된 UI 결과");
+    }
+
+    function drawCard3(ctx) {
+      const bg = ctx.createLinearGradient(0, 0, W, H);
+      bg.addColorStop(0, "#241A38"); bg.addColorStop(1, "#402252");
+      ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+      header(ctx, 3, "#FFFFFF", "#E6F66E");
+      headline(ctx, ["텍스트 색도", "자동으로"], 78, 260, "#FFFFFF", 104);
+      text(ctx, "배경마다 검정과 흰색의 대비를 계산합니다", 82, 510, 31, 500, "#C8BDD3");
+      shadow(ctx, 60, "rgba(0, 0, 0, .3)", 24);
+      rounded(ctx, 76, 612, 928, 800, 58, "#F1D3E8"); clearShadow(ctx);
+      rounded(ctx, 118, 660, 844, 270, 38, "#E98AC5");
+      text(ctx, "밝은 배경", 164, 730, 24, 700, "#6D3B5B");
+      text(ctx, "BLACK", 164, 846, 68, 900, "#171914");
+      rounded(ctx, 738, 720, 170, 82, 41, "#171914");
+      text(ctx, "9.1:1", 823, 773, 25, 900, "#FFFFFF", "center");
+      rounded(ctx, 118, 970, 844, 384, 38, "#341A48");
+      text(ctx, "어두운 배경", 164, 1040, 24, 700, "#C4AED1");
+      text(ctx, "WHITE", 164, 1174, 68, 900, "#FFFFFF");
+      rounded(ctx, 738, 1030, 170, 82, 41, "#FFFFFF");
+      text(ctx, "10.8:1", 823, 1083, 25, 900, "#24132F", "center");
+      text(ctx, "본문 · 버튼 · 라벨을 각각 확인", 164, 1285, 26, 600, "#DCCEE4");
+      rounded(ctx, 148, 1500, 784, 128, 38, "rgba(255,255,255,.1)", "rgba(255,255,255,.22)", 2);
+      circle(ctx, 206, 1564, 20, "#E6F66E");
+      text(ctx, "WCAG AA 4.5:1 기준 자동 보정", 252, 1575, 28, 700, "#FFFFFF");
+      footer(ctx, "가독성까지 팔레트의 일부로", "#FFFFFF");
+    }
+
+    function drawCard4(ctx, images) {
+      ctx.fillStyle = "#CBE1ED"; ctx.fillRect(0, 0, W, H);
+      header(ctx, 4, "#17252C", "#FFFFFF");
+      headline(ctx, ["경계선 없이", "자연스럽게 연결"], 78, 260, "#17252C", 98);
+      text(ctx, "이미지 끝 15%에서 UI 배경색으로 부드럽게", 82, 510, 30, 600, "#52707D");
+      shadow(ctx, 54, "rgba(38, 73, 87, .23)", 22);
+      rounded(ctx, 78, 612, 924, 1008, 62, "#D9BA9F"); clearShadow(ctx);
+      cover(ctx, images.pasta, 78, 612, 924, 690, 62);
+      const g = ctx.createLinearGradient(0, 1060, 0, 1380);
+      g.addColorStop(0, "rgba(217,186,159,0)");
+      g.addColorStop(.45, "rgba(217,186,159,.3)");
+      g.addColorStop(1, "#D9BA9F");
+      ctx.fillStyle = g; ctx.fillRect(78, 1020, 924, 390);
+      ctx.fillStyle = "#D9BA9F"; ctx.fillRect(78, 1280, 924, 340);
+      text(ctx, "오늘의 파스타", 140, 1390, 54, 800, "#201B17");
+      text(ctx, "사진의 분위기는 살리고 정보는 더 선명하게", 140, 1452, 25, 500, "#655245");
+      rounded(ctx, 140, 1510, 260, 74, 24, "#7A492E");
+      text(ctx, "자세히 보기", 270, 1558, 24, 800, "#FFFFFF", "center");
+      rounded(ctx, 744, 1164, 188, 72, 36, "rgba(255,255,255,.88)");
+      text(ctx, "BLEND 15%", 838, 1211, 21, 900, "#315462", "center");
+      footer(ctx, "상품 · 콘텐츠 · 배너 미리보기");
+    }
+
+    function drawCard5(ctx, images) {
+      ctx.fillStyle = "#E3E9D6"; ctx.fillRect(0, 0, W, H);
+      header(ctx, 5, "#1D251A", "#FFFFFF");
+      headline(ctx, ["50장으로", "빠르게 검수"], 78, 260, "#1D251A", 104);
+      text(ctx, "과일·야채·한식·양식·중식 각 10장", 82, 510, 31, 600, "#65705D");
+      const items = [
+        [images.apple, "과일", "#A54739"],
+        [images.broccoli, "야채", "#527445"],
+        [images.bibimbap, "한식", "#A96435"],
+        [images.pizza, "양식", "#C9873C"],
+        [images.mapo, "중식", "#9E4334"],
+        [images.grape, "후보색", "#715172"]
+      ];
+      items.forEach(([image, label, color], i) => {
+        const col = i % 2; const row = Math.floor(i / 2);
+        const x = 78 + col * 474; const y = 618 + row * 312;
+        shadow(ctx, 30, "rgba(43,55,36,.12)", 12);
+        rounded(ctx, x, y, 450, 278, 34, "#FFFFFF"); clearShadow(ctx);
+        cover(ctx, image, x + 14, y + 14, 422, 198, 24);
+        rounded(ctx, x + 28, y + 222, 90, 38, 19, color);
+        text(ctx, label, x + 73, y + 249, 18, 800, "#FFFFFF", "center");
+        [0, 1, 2].forEach((n) => circle(ctx, x + 330 + n * 34, y + 241, 12, n === 0 ? color : n === 1 ? "#E8D6BE" : "#20211D"));
+      });
+      rounded(ctx, 128, 1602, 824, 86, 43, "#1E251B");
+      text(ctx, "승인  42", 258, 1657, 25, 800, "#E6F66E", "center");
+      text(ctx, "·", 540, 1655, 25, 800, "#788171", "center");
+      text(ctx, "보정  8", 790, 1657, 25, 800, "#FFFFFF", "center");
+      footer(ctx, "많이 넣고 · 비교하고 · 바로 고치기");
+    }
+
+    function drawCard6(ctx) {
+      ctx.fillStyle = "#171A17"; ctx.fillRect(0, 0, W, H);
+      header(ctx, 6, "#FFFFFF", "#E6F66E");
+      headline(ctx, ["추출한 색을", "바로 업무에 적용"], 78, 260, "#FFFFFF", 96);
+      text(ctx, "CSS 변수와 JSON 결과를 한 번에", 82, 510, 32, 500, "#AEB4A9");
+      shadow(ctx, 58, "rgba(0,0,0,.38)", 26);
+      rounded(ctx, 74, 612, 932, 890, 56, "#242824", "#393F38", 2); clearShadow(ctx);
+      rounded(ctx, 110, 650, 860, 94, 24, "#30362F");
+      circle(ctx, 154, 697, 10, "#E86D63"); circle(ctx, 188, 697, 10, "#E7C860"); circle(ctx, 222, 697, 10, "#7AC46E");
+      text(ctx, "ui-palette.css", 292, 706, 23, 700, "#C6CCC2");
+      const code = [
+        [":root {", "#C9D0C5"],
+        ["  --ui-key: #B86631;", "#F0C178"],
+        ["  --ui-surface: #F4E5DB;", "#D9A77E"],
+        ["  --ui-text: #151514;", "#E6F66E"],
+        ["  --ui-accent: #8F7330;", "#B7CF8A"],
+        ["}", "#C9D0C5"]
+      ];
+      code.forEach(([line, color], i) => text(ctx, line, 142, 840 + i * 82, 33, 600, color));
+      rounded(ctx, 126, 1370, 330, 82, 41, "#E6F66E");
+      text(ctx, "CSS 복사", 291, 1423, 26, 900, "#171914", "center");
+      rounded(ctx, 484, 1370, 470, 82, 41, "#383E37", "#596057", 2);
+      text(ctx, "전체 JSON 다운로드", 719, 1423, 26, 800, "#FFFFFF", "center");
+      rounded(ctx, 116, 1580, 848, 110, 34, "rgba(230,246,110,.08)", "rgba(230,246,110,.22)", 2);
+      circle(ctx, 172, 1635, 18, "#E6F66E");
+      text(ctx, "AI · API 키 없이 브라우저에서 실행", 218, 1646, 27, 700, "#FFFFFF");
+      footer(ctx, "로컬 실행 · 데이터 외부 전송 없음", "#FFFFFF");
+    }
+
+    async function render() {
+      const entries = await Promise.all(Object.entries(PHOTO_PATHS).map(async ([key, src]) => [key, await loadPhoto(src)]));
+      const images = Object.fromEntries(entries);
+      const canvases = Array.from({ length: 6 }, (_, i) => document.getElementById(`card-${i + 1}`));
+      const contexts = canvases.map((canvas) => canvas.getContext("2d"));
+      drawCard1(contexts[0], images);
+      drawCard2(contexts[1], images);
+      drawCard3(contexts[2]);
+      drawCard4(contexts[3], images);
+      drawCard5(contexts[4], images);
+      drawCard6(contexts[5]);
+      document.getElementById("status").textContent = "6개 카드 렌더링 완료 · 필요한 카드를 PNG로 따로 저장하세요.";
+    }
+
+    document.querySelectorAll(".save").forEach((button) => {
+      button.addEventListener("click", () => {
+        const canvas = document.getElementById(button.dataset.card);
+        canvas.toBlob((blob) => {
+          if (!blob) return;
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = button.dataset.name;
+          link.click();
+          setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+        }, "image/png");
+      });
+    });
+
+    render();
+  </script>
+</body>
+</html>

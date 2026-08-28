@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <title>UI 컬러 로직 스튜디오 사용 매뉴얼</title>
+  <style>
+    :root {
+      --ink: #1c1e1a;
+      --muted: #70756b;
+      --line: #dde0d7;
+      --paper: #ffffff;
+      --ground: #f2f3ee;
+      --lime: #e6f66e;
+      --lime-deep: #66752a;
+      --code: #20231e;
+      --radius: 18px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--ground);
+      font-family: Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.65;
+      word-break: keep-all;
+    }
+    a { color: inherit; }
+    button { font: inherit; cursor: pointer; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 64px;
+      padding: 10px 24px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(16px);
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; }
+    .mark { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 11px; background: var(--lime); }
+    .top-actions { display: flex; gap: 8px; }
+    .button {
+      min-height: 36px;
+      padding: 0 13px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: var(--ink);
+      background: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .button.primary { border-color: #dbe78d; background: var(--lime); }
+    .layout { max-width: 1240px; margin: 0 auto; padding: 34px 24px 70px; display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 28px; }
+    .toc { position: sticky; top: 90px; align-self: start; padding: 15px; border: 1px solid var(--line); border-radius: 15px; background: rgba(255,255,255,.78); }
+    .toc strong { display: block; margin: 0 8px 8px; font-size: 12px; }
+    .toc a { display: block; padding: 7px 8px; border-radius: 7px; color: var(--muted); font-size: 12px; text-decoration: none; }
+    .toc a:hover { color: var(--ink); background: #fff; }
+    main { min-width: 0; }
+    .hero { padding: 40px; border-radius: 24px; color: #f7f8f2; background: var(--code); overflow: hidden; position: relative; }
+    .hero::after { content: ""; position: absolute; width: 260px; height: 260px; right: -70px; bottom: -130px; border-radius: 50%; background: var(--lime); opacity: .92; }
+    .eyebrow { display: inline-block; margin-bottom: 12px; color: var(--lime); font-size: 11px; font-weight: 800; letter-spacing: .14em; }
+    h1 { max-width: 700px; margin: 0 0 12px; font-size: clamp(30px, 5vw, 52px); line-height: 1.08; letter-spacing: -.055em; }
+    .hero p { max-width: 650px; margin: 0; color: #c8cdc2; font-size: 15px; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; position: relative; z-index: 1; }
+    .hero-meta span { padding: 7px 10px; border: 1px solid #484d44; border-radius: 999px; color: #e7e9e3; font-size: 11px; }
+    section { margin-top: 22px; padding: 28px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
+    h2 { margin: 0 0 8px; font-size: 23px; letter-spacing: -.035em; }
+    h3 { margin: 24px 0 8px; font-size: 16px; }
+    p { margin: 8px 0; }
+    .lead { color: var(--muted); font-size: 14px; }
+    .steps { display: grid; gap: 11px; margin-top: 18px; counter-reset: step; }
+    .step { display: grid; grid-template-columns: 34px 1fr; gap: 12px; padding: 14px; border: 1px solid #e7e9e2; border-radius: 12px; background: #fafbf7; }
+    .step::before { counter-increment: step; content: counter(step); width: 30px; height: 30px; display: grid; place-items: center; border-radius: 9px; color: #252b12; background: var(--lime); font-size: 12px; font-weight: 900; }
+    .step strong { display: block; margin-bottom: 3px; font-size: 13px; }
+    .step span { color: var(--muted); font-size: 12px; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+    .card { padding: 16px; border: 1px solid #e4e6df; border-radius: 13px; background: #fbfcf9; }
+    .card strong { display: block; margin-bottom: 4px; font-size: 13px; }
+    .card p { margin: 0; color: var(--muted); font-size: 12px; }
+    .role-table { width: 100%; margin-top: 14px; border-collapse: collapse; font-size: 12px; }
+    .role-table th, .role-table td { padding: 10px 11px; border-bottom: 1px solid #e8eae4; text-align: left; vertical-align: top; }
+    .role-table th { color: #656a61; background: #f7f8f4; font-size: 11px; }
+    .role-table code { color: #4d5b1f; background: #f0f5d0; }
+    code { padding: 2px 5px; border-radius: 5px; font-family: Consolas, "SFMono-Regular", monospace; font-size: .92em; background: #eef0e9; }
+    pre { margin: 12px 0; padding: 15px; overflow-x: auto; border-radius: 12px; color: #e6e9e1; background: var(--code); font-size: 12px; line-height: 1.65; }
+    pre code { padding: 0; color: inherit; background: transparent; }
+    .note { margin-top: 14px; padding: 13px 14px; border-left: 4px solid #aebe47; border-radius: 0 10px 10px 0; color: #4e5543; background: #f5f8df; font-size: 12px; }
+    .warning { border-left-color: #df9b5c; background: #fff4e8; }
+    .flow { display: flex; align-items: stretch; gap: 8px; margin-top: 16px; }
+    .flow div { flex: 1; padding: 13px 9px; border: 1px solid #e1e4db; border-radius: 11px; text-align: center; background: #fafbf8; font-size: 11px; font-weight: 700; }
+    .flow span { display: grid; place-items: center; color: #a4a89e; }
+    details { margin-top: 9px; padding: 12px 14px; border: 1px solid #e5e7e0; border-radius: 11px; background: #fbfcfa; }
+    summary { cursor: pointer; font-size: 13px; font-weight: 700; }
+    details p { color: var(--muted); font-size: 12px; }
+    footer { padding: 24px 0 0; color: #8b8f87; font-size: 11px; text-align: center; }
+    @media (max-width: 850px) {
+      .layout { grid-template-columns: 1fr; padding: 18px 14px 50px; }
+      .toc { position: static; display: flex; overflow-x: auto; gap: 3px; }
+      .toc strong { display: none; }
+      .toc a { flex: 0 0 auto; }
+      .hero { padding: 30px 24px; }
+    }
+    @media (max-width: 560px) {
+      .topbar { padding: 9px 12px; }
+      .brand span:last-child { display: none; }
+      .top-actions .button:last-child { display: none; }
+      section { padding: 21px 17px; }
+      .grid { grid-template-columns: 1fr; }
+      .flow { flex-direction: column; }
+      .flow span { transform: rotate(90deg); }
+      .role-table { display: block; overflow-x: auto; white-space: nowrap; }
+    }
+    @media print {
+      body { background: #fff; }
+      .topbar, .toc { display: none; }
+      .layout { max-width: none; display: block; padding: 0; }
+      .hero, section { break-inside: avoid; box-shadow: none; }
+      .hero { color: #111; background: #fff; border: 1px solid #bbb; }
+      .hero p { color: #333; }
+      .hero::after { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="mark">C</span><span>Color Logic Studio 매뉴얼</span></div>
+    <div class="top-actions">
+      <button class="button" type="button" onclick="window.print()">인쇄·PDF 저장</button>
+      <a class="button primary" href="/">스튜디오 열기</a>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="목차">
+      <strong>사용 매뉴얼</strong>
+      <a href="#overview">1. 프로그램 개요</a>
+      <a href="#quick-start">2. 빠른 시작</a>
+      <a href="#workspace">3. 화면 구성</a>
+      <a href="#tuning">4. 보정 설정</a>
+      <a href="#palette">5. 팔레트 해석</a>
+      <a href="#preview">6. 미리보기</a>
+      <a href="#batch">7. 50장 테스트</a>
+      <a href="#export">8. 결과 내보내기</a>
+      <a href="#projects">9. 저장·복원</a>
+      <a href="#local">10. 로컬 실행</a>
+      <a href="#faq">11. 문제 해결</a>
+    </nav>
+
+    <main>
+      <div class="hero">
+        <span class="eyebrow">USER MANUAL · v1.1</span>
+        <h1>사진을 넣고,<br />UI 색상으로 바꾸는 방법</h1>
+        <p>대표색 추출부터 텍스트 대비, 상품·콘텐츠·배너 미리보기, 대량 검수와 개발용 내보내기까지 한 번에 설명합니다.</p>
+        <div class="hero-meta"><span>AI·API 키 불필요</span><span>브라우저 내부 처리</span><span>테스트 이미지 50장 포함</span></div>
+      </div>
+
+      <section id="overview">
+        <h2>1. 프로그램 개요</h2>
+        <p class="lead">UI 컬러 로직 스튜디오는 사진의 색을 그대로 복사하지 않고, 실제 UI에서 쓰기 좋은 역할별 색상으로 보정하는 도구입니다.</p>
+        <div class="flow">
+          <div>이미지 입력</div><span>→</span><div>후보색 추출</div><span>→</span><div>UI 안전 범위 보정</div><span>→</span><div>텍스트 대비 계산</div><span>→</span><div>CSS·JSON 출력</div>
+        </div>
+        <div class="note">이미지는 서버나 AI 모델로 전송하지 않습니다. 색상 분석은 사용 중인 브라우저 안에서 수행됩니다.</div>
+      </section>
+
+      <section id="quick-start">
+        <h2>2. 빠른 시작</h2>
+        <div class="steps">
+          <div class="step"><div><strong>이미지 넣기</strong><span>상단 영역에 JPG·PNG·WebP 파일을 끌어놓거나 ‘이미지 선택’을 누릅니다. 여러 장을 동시에 선택할 수 있습니다.</span></div></div>
+          <div class="step"><div><strong>대표색 확인</strong><span>오른쪽 UI 팔레트에서 RAW KEY와 CORRECTED 값을 비교합니다. 후보색을 누르면 대표색을 교체할 수 있습니다.</span></div></div>
+          <div class="step"><div><strong>문구와 템플릿 검수</strong><span>왼쪽에서 제목·설명·버튼 문구를 입력하고, 상품·콘텐츠·배너 유형을 전환해 실제 적용 모습을 봅니다.</span></div></div>
+          <div class="step"><div><strong>보정 또는 승인</strong><span>채도·색온도·표면 틴트·최소 대비를 조정한 뒤 결과를 승인하거나 ‘보정 필요’로 기록합니다.</span></div></div>
+          <div class="step"><div><strong>결과 내보내기</strong><span>‘CSS 복사’로 현재 팔레트를 복사하거나 ‘프로젝트 JSON’으로 이미지와 모든 분석 결과를 저장합니다.</span></div></div>
+        </div>
+      </section>
+
+      <section id="workspace">
+        <h2>3. 화면 구성</h2>
+        <div class="grid">
+          <div class="card"><strong>보정 로직</strong><p>색의 분위기를 조정하는 프로필과 슬라이더가 있습니다.</p></div>
+          <div class="card"><strong>텍스트 입력</strong><p>라벨·제목·설명·메타 정보·버튼 문구를 실제 콘텐츠로 교체합니다.</p></div>
+          <div class="card"><strong>라이브 미리보기</strong><p>상품·콘텐츠·배너에서 이미지와 색이 자연스럽게 연결되는지 확인합니다.</p></div>
+          <div class="card"><strong>UI 팔레트</strong><p>역할별 색상과 HEX 값을 확인하고 직접 미세 조정합니다.</p></div>
+          <div class="card"><strong>필름 스트립</strong><p>여러 이미지 사이를 빠르게 이동합니다. 색 띠는 각 이미지의 대표색입니다.</p></div>
+          <div class="card"><strong>배치 검수</strong><p>여러 이미지의 결과를 한 화면에서 비교하고 승인 여부를 기록합니다.</p></div>
+        </div>
+      </section>
+
+      <section id="tuning">
+        <h2>4. 보정 설정</h2>
+        <table class="role-table">
+          <thead><tr><th>항목</th><th>역할</th><th>권장 사용</th></tr></thead>
+          <tbody>
+            <tr><td>균형형</td><td>대부분의 사진에 맞는 기본 보정</td><td>처음 분석할 때</td></tr>
+            <tr><td>소프트</td><td>채도와 대비가 부드러운 UI</td><td>라이프스타일·뷰티·에디토리얼</td></tr>
+            <tr><td>볼드</td><td>강한 채도와 선명한 강조색</td><td>프로모션·이벤트·게임</td></tr>
+            <tr><td>다크</td><td>어두운 표면을 중심으로 팔레트 생성</td><td>다크 테마·영상 콘텐츠</td></tr>
+            <tr><td>채도 보정</td><td>대표색의 선명도 조절</td><td>색이 탁하거나 지나치게 강할 때</td></tr>
+            <tr><td>색온도</td><td>따뜻한 색·차가운 색 방향 조절</td><td>브랜드 분위기를 통일할 때</td></tr>
+            <tr><td>표면 틴트</td><td>카드 배경에 대표색이 섞이는 정도</td><td>본문 배경이 너무 진하거나 흐릴 때</td></tr>
+            <tr><td>최소 대비</td><td>텍스트와 배경의 목표 명암비</td><td>일반 본문은 기본값 4.5:1 권장</td></tr>
+          </tbody>
+        </table>
+        <div class="note">‘무채색·과노출 제외’를 켜면 흰 배경과 검은 그림자가 대표색으로 선택되는 현상을 줄일 수 있습니다.</div>
+      </section>
+
+      <section id="palette">
+        <h2>5. 팔레트 결과 해석</h2>
+        <table class="role-table">
+          <thead><tr><th>역할</th><th>사용 위치</th><th>CSS 변수</th></tr></thead>
+          <tbody>
+            <tr><td>Key</td><td>대표 강조색, 배지</td><td><code>--ui-key</code></td></tr>
+            <tr><td>On Key</td><td>Key 위의 텍스트</td><td><code>--ui-key-foreground</code></td></tr>
+            <tr><td>Surface</td><td>카드의 기본 바탕</td><td><code>--ui-surface</code></td></tr>
+            <tr><td>Gradient A/B</td><td>이미지와 본문 연결, 본문 배경</td><td><code>--ui-gradient-top/bottom</code></td></tr>
+            <tr><td>Text/Muted</td><td>제목·본문·보조 정보</td><td><code>--ui-text-primary/secondary</code></td></tr>
+            <tr><td>Accent</td><td>버튼·상태 강조</td><td><code>--ui-accent</code></td></tr>
+            <tr><td>On Accent</td><td>Accent 위의 텍스트</td><td><code>--ui-accent-foreground</code></td></tr>
+            <tr><td>Border</td><td>카드와 버튼 경계</td><td><code>--ui-border</code></td></tr>
+          </tbody>
+        </table>
+        <p class="lead">텍스트는 무조건 검정이 아닙니다. 각 배경에서 짙은 검정과 흰색의 대비를 비교해 더 읽기 좋은 색을 자동 선택합니다.</p>
+      </section>
+
+      <section id="preview">
+        <h2>6. 상품·콘텐츠·배너 미리보기</h2>
+        <div class="grid">
+          <div class="card"><strong>상품</strong><p>둥근 카드와 명확한 CTA를 사용합니다. 이미지 하단 15%에서 본문색으로 자연스럽게 전환됩니다.</p></div>
+          <div class="card"><strong>콘텐츠</strong><p>각진 카드와 에디토리얼 제목 스타일로 콘텐츠형 UI를 확인합니다.</p></div>
+          <div class="card"><strong>배너</strong><p>데스크톱은 좌우 경계 15%, 모바일은 상하 경계 15% 범위에서만 이미지가 자연스럽게 섞입니다.</p></div>
+          <div class="card"><strong>대비 표시</strong><p>본문의 실제 명암비와 WCAG AA 통과 여부를 미리보기 아래에서 확인합니다.</p></div>
+        </div>
+        <div class="note">경계가 선처럼 보이면 브라우저를 강력 새로고침하십시오. Windows Chrome 기준 <code>Ctrl + Shift + R</code>입니다.</div>
+      </section>
+
+      <section id="batch">
+        <h2>7. 테스트 이미지 50장과 배치 검수</h2>
+        <p class="lead">상단의 ‘테스트 0/50’을 누르면 과일·야채·한식·양식·중식 각 10장씩 자동으로 분석합니다.</p>
+        <div class="grid">
+          <div class="card"><strong>카테고리 구성</strong><p>과일 10 · 야채 10 · 한식 10 · 양식 10 · 중식 10</p></div>
+          <div class="card"><strong>빠른 비교</strong><p>대표색, 표면색, 본문색, 강조색과 텍스트색을 카드별로 비교합니다.</p></div>
+          <div class="card"><strong>검수 기록</strong><p>‘승인’ 또는 ‘보정’을 선택하면 현재 프로젝트에 자동 저장됩니다.</p></div>
+          <div class="card"><strong>원본 출처</strong><p>리서치 이미지 카드의 Wikimedia Commons 링크에서 원본과 라이선스를 확인할 수 있습니다.</p></div>
+        </div>
+        <div class="note">첫 분석 결과는 IndexedDB에 캐시됩니다. 다음 프로젝트에서 같은 무채색 제외 설정으로 불러오면 50장을 다시 계산하지 않고 캐시를 사용합니다.</div>
+      </section>
+
+      <section id="export">
+        <h2>8. 결과 내보내기</h2>
+        <h3>CSS 복사</h3>
+        <p class="lead">선택한 한 이미지의 팔레트를 CSS 변수 형태로 클립보드에 복사합니다.</p>
+        <pre><code>:root {
+  --ui-key: #C27637;
+  --ui-key-foreground: #151514;
+  --ui-gradient-bottom: #D8B99E;
+  --ui-text-primary: #151514;
+  --ui-accent: #979A17;
+}</code></pre>
+        <h3>프로젝트 JSON</h3>
+        <p class="lead">분석한 모든 이미지의 원본 데이터, 후보색, 보정 팔레트, 대비값, 검수 상태, 입력 문구와 보정 설정을 하나의 JSON 파일로 저장합니다.</p>
+        <div class="note">HEX 값을 직접 수정했다면 입력창 밖을 클릭하거나 Enter를 눌러 값을 확정한 뒤 내보내십시오.</div>
+      </section>
+
+      <section id="projects">
+        <h2>9. 프로젝트 저장·복원</h2>
+        <p class="lead">업로드 이미지와 분석 결과는 브라우저 IndexedDB에 자동 저장됩니다. 브라우저를 닫거나 PC를 재부팅해도 같은 브라우저와 주소로 다시 접속하면 마지막 프로젝트를 복원합니다.</p>
+        <div class="grid">
+          <div class="card"><strong>프로젝트 이름</strong><p>상단 이름 입력란을 수정하면 프로젝트 이름과 현재 작업이 자동 저장됩니다.</p></div>
+          <div class="card"><strong>프로젝트 전환</strong><p>프로젝트 선택 메뉴에서 이전 작업을 골라 이미지와 설정을 다시 불러옵니다.</p></div>
+          <div class="card"><strong>JSON 백업·복원</strong><p>‘프로젝트 JSON’으로 백업하고 ‘JSON 불러오기’로 다른 PC나 브라우저에서 복원합니다.</p></div>
+          <div class="card"><strong>삭제·초기화</strong><p>‘현재 삭제’는 선택 프로젝트만, ‘전체 초기화’는 모든 프로젝트와 테스트 캐시를 삭제합니다.</p></div>
+          <div class="card"><strong>자동 저장 상태</strong><p>상단에 ‘자동 저장 중’ 또는 ‘자동 저장됨’으로 현재 저장 상태가 표시됩니다.</p></div>
+          <div class="card"><strong>테스트 50장 캐시</strong><p>첫 분석 결과를 무채색 제외 설정별로 저장하여 다음 실행부터 빠르게 불러옵니다.</p></div>
+        </div>
+        <div class="note warning">시크릿 모드, 브라우저 데이터 삭제, 다른 브라우저·PC에서는 IndexedDB가 이어지지 않습니다. 중요한 작업은 반드시 프로젝트 JSON으로 별도 백업하십시오.</div>
+      </section>
+
+      <section id="local">
+        <h2>10. 로컬 컴퓨터에서 실행</h2>
+        <p class="lead">AI 도구나 API 키는 필요하지 않습니다. Node.js 설치 후 프로그램을 직접 실행할 수 있습니다.</p>
+        <h3>준비물</h3>
+        <ul><li>Windows 11, macOS 또는 Linux</li><li>Node.js 22.13 이상</li><li>최초 설치 시 인터넷 연결</li></ul>
+        <h3>GitHub에서 받은 경우</h3>
+        <pre><code>git clone &lt;저장소 주소&gt;
+cd ui-color-logic-studio
+npm install
+npm run dev</code></pre>
+        <p class="lead">명령창에 표시된 로컬 주소를 Chrome에서 엽니다. 일반적으로 <code>http://localhost:5173</code> 형태입니다.</p>
+        <h3>배포용 로컬 빌드</h3>
+        <pre><code>npm run build:local
+npm run start</code></pre>
+        <div class="note warning">최초 <code>npm install</code>은 패키지를 내려받기 때문에 인터넷이 필요합니다. 설치가 끝나면 직접 업로드한 이미지 분석은 로컬에서 처리됩니다.</div>
+      </section>
+
+      <section id="faq">
+        <h2>11. 문제 해결</h2>
+        <details open><summary>이미지를 넣어도 분석되지 않습니다.</summary><p>JPG·PNG·WebP인지 확인하고, 한 장씩 다시 넣어보십시오. 지나치게 큰 파일은 웹용 크기로 줄이면 안정적입니다.</p></details>
+        <details><summary>분홍색 배경인데 텍스트가 검정으로 나옵니다.</summary><p>오류가 아닙니다. 해당 배경에서는 검정의 대비가 흰색보다 높아 자동 선택된 결과입니다.</p></details>
+        <details><summary>그라데이션이 너무 넓습니다.</summary><p><code>.photo-bridge</code>의 <code>height: 15%</code>를 조절합니다. 중간 색상점의 퍼센트는 높이가 아니라 색이 변하는 위치입니다.</p></details>
+        <details><summary>새 버전이 화면에 반영되지 않습니다.</summary><p>Windows Chrome에서 <code>Ctrl + Shift + R</code>을 눌러 강력 새로고침하십시오.</p></details>
+        <details><summary>저장한 프로젝트가 보이지 않습니다.</summary><p>이전에 사용한 것과 같은 브라우저 프로필 및 <code>http://localhost:5173</code> 주소인지 확인하십시오. 시크릿 모드나 다른 포트는 별도 저장소를 사용합니다.</p></details>
+        <details><summary>AI 프로그램에서만 사용할 수 있습니까?</summary><p>아닙니다. AI는 로직을 개발하거나 개선할 때만 선택적으로 사용합니다. 완성된 프로그램은 일반 로컬 웹앱으로 독립 실행됩니다.</p></details>
+      </section>
+
+      <footer>UI 컬러 로직 스튜디오 · 사용 매뉴얼 v1.1</footer>
+    </main>
+  </div>
+</body>
+</html>
