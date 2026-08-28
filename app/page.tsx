@@ -16,6 +16,7 @@ import {
   ImagePlus,
   Layers3,
   Palette,
+  Puzzle,
   RefreshCw,
   SlidersHorizontal,
   Sparkles,
@@ -633,6 +634,9 @@ export default function Home() {
         </div>
         <div className="header-actions">
           <Badge variant="outline" className="privacy-badge">브라우저 안에서만 처리</Badge>
+          <Button variant="outline" size="sm" onClick={() => window.location.assign("/downloads/ui-color-logic-studio-extension.zip") }>
+            <Puzzle size={15} /> Chrome 확장
+          </Button>
           <Button variant="outline" size="sm" onClick={() => window.open("/promo.html", "_blank", "noopener,noreferrer")}>
             <Layers3 size={15} /> 소개 카드
           </Button>

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light" />
+    <title>UI 컬러 로직 스튜디오</title>
+  </head>
+  <body>
+    <div class="extension-command-bar" aria-label="Chrome 확장프로그램 전용 기능">
+      <div>
+        <span class="extension-mode-dot" aria-hidden="true"></span>
+        <strong>Chrome 확장 모드</strong>
+        <span>웹페이지에서 바로 가져와 분석합니다.</span>
+      </div>
+      <div>
+        <button id="capture-source-tab" type="button">현재 웹페이지 화면 캡처</button>
+        <a href="privacy.html" target="_blank" rel="noreferrer">권한·개인정보 안내</a>
+      </div>
+    </div>
+    <div id="root"></div>
+    <div id="extension-import-status" class="extension-import-status" role="status" aria-live="polite" hidden></div>
+    <script type="module" src="/main.tsx"></script>
+  </body>
+</html>

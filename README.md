@@ -12,6 +12,7 @@
   <img src="https://img.shields.io/badge/Processing-100%25%20Browser-0284C7?style=for-the-badge" alt="브라우저 로컬 처리" />
   <img src="https://img.shields.io/badge/Test%20Images-50-16A34A?style=for-the-badge" alt="테스트 이미지 50장" />
   <img src="https://img.shields.io/badge/Storage-IndexedDB-EA580C?style=for-the-badge" alt="IndexedDB 자동 저장" />
+  <img src="https://img.shields.io/badge/Chrome-Extension-FBBC04?style=for-the-badge&logo=googlechrome&logoColor=111827" alt="Chrome 확장프로그램" />
 </p>
 
 [**HTML 매뉴얼**](https://ui-color-logic-studio.study2100-ai.chatgpt.site/manual.html) ·
@@ -123,9 +124,33 @@ npm run start
 | --- | --- | --- |
 | 로컬 | `npm run dev` | `http://localhost:5173`의 IndexedDB |
 | Vercel | GitHub 연결 후 자동 배포 | Vercel Production 주소의 IndexedDB |
+| Chrome 확장 | ZIP 압축 해제 후 Chrome에 로드 | 확장프로그램 전용 IndexedDB |
 
 > [!NOTE]
-> 로컬과 Vercel은 서로 다른 브라우저 저장 영역을 사용합니다. 프로젝트를 옮길 때는 **프로젝트 JSON 내보내기·불러오기**를 사용하세요. Vercel에서는 배포마다 주소가 달라지는 Preview URL보다 고정된 Production URL 사용을 권장합니다.
+> 로컬, Vercel, Chrome 확장프로그램은 서로 다른 브라우저 저장 영역을 사용합니다. 프로젝트를 옮길 때는 **프로젝트 JSON 내보내기·불러오기**를 사용하세요. Vercel에서는 배포마다 주소가 달라지는 Preview URL보다 고정된 Production URL 사용을 권장합니다.
+
+---
+
+## 🧩 Chrome 확장프로그램
+
+같은 컬러 분석 엔진을 Chrome 새 탭에서 실행하고, 보고 있는 웹 이미지나 현재 화면을 바로 분석할 수 있습니다.
+
+[**Chrome 확장프로그램 ZIP 다운로드**](https://ui-color-logic-studio.study2100-ai.chatgpt.site/downloads/ui-color-logic-studio-extension.zip)
+
+```bash
+npm run build:extension
+```
+
+빌드가 끝나면 `chrome://extensions`에서 **개발자 모드 → 압축해제된 확장 프로그램을 로드합니다**를 선택하고 `extension/dist` 폴더를 지정합니다. 위 ZIP을 받은 경우 먼저 압축을 풀고 그 폴더를 지정하면 됩니다.
+
+| 진입 방법 | 동작 |
+| --- | --- |
+| 툴바 아이콘 | 전체 컬러 스튜디오 열기 |
+| 확장 상단 바 | 직전에 보던 웹페이지 화면을 다시 캡처 |
+| 이미지 우클릭 | 선택한 웹 이미지를 새 분석 프로젝트에 추가 |
+| 페이지 우클릭 | 현재 보이는 화면을 캡처해 분석 |
+
+확장프로그램 안에서도 직접 업로드, 테스트 50장, IndexedDB 자동 복원, 프로젝트 JSON 백업을 사용할 수 있습니다. 확장프로그램 데이터는 웹·로컬·Vercel과 분리되므로 환경을 옮길 때는 JSON을 사용하세요. 웹 화면의 **Chrome 확장** 버튼으로 설치 ZIP을 받을 수 있습니다. 권한과 설치 방법은 [`extension/README.md`](extension/README.md), 데이터 처리 기준은 [`extension/PRIVACY.md`](extension/PRIVACY.md)와 [`public/extension-privacy.html`](public/extension-privacy.html)에서 확인할 수 있습니다.
 
 ---
 
@@ -313,7 +338,15 @@ lib/
 public/
   manual.html               독립 실행형 한국어 사용 매뉴얼
   promo.html                9:16 소개 카드 6종과 PNG 저장 기능
+  extension-privacy.html    Chrome 웹 스토어용 공개 권한·개인정보 안내
+  downloads/               설치 가능한 Chrome 확장 ZIP
   test-images/              테스트용 WebP 이미지와 출처 manifest
+extension/
+  main.tsx                  기존 스튜디오를 확장 탭으로 실행
+  public/background.js      아이콘·우클릭·화면 캡처 진입점
+  public/manifest.json      Chrome Manifest V3 권한과 설정
+  public/privacy.html       확장 내 권한·개인정보 안내
+  README.md                 설치·사용·권한 설명
 tsconfig.next.json          Next.js·Vercel 전용 타입 검사 범위
 vercel.json                 Vercel Next.js 빌드 설정
 scripts/
@@ -331,6 +364,7 @@ tests/                      렌더링 및 UI 구성 검사
 | `npm run dev` | Next.js 로컬 개발 서버를 5173 포트로 실행 |
 | `npm run build:local` | 표준 Next.js 운영 빌드 |
 | `npm run build:vercel` | Vercel이 사용하는 Next.js 빌드 |
+| `npm run build:extension` | Chrome에서 로드할 `extension/dist` 생성 |
 | `npm run start` | Next.js 운영 빌드를 5173 포트로 실행 |
 | `npm run dev:sites` | 기존 Sites/Vinext 개발 서버 실행 |
 | `npm run build:sites` | 기존 Sites/Vinext 호스팅 빌드 |

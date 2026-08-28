@@ -18,6 +18,15 @@ if [[ ! -x "${vinext}" ]]; then
   exit 69
 fi
 
+echo "Building Chrome extension package..."
+node "${SITES_PROJECT_ROOT}/scripts/generate-extension-icons.mjs"
+timeout \
+  --signal=TERM \
+  --kill-after="${SITES_BUILD_KILL_AFTER:-10s}" \
+  "${SITES_BUILD_TIMEOUT:-3m}" \
+  "${SITES_PROJECT_ROOT}/node_modules/.bin/vite" build --config "${SITES_PROJECT_ROOT}/vite.extension.config.ts"
+node "${SITES_PROJECT_ROOT}/scripts/copy-extension-assets.mjs"
+
 echo "Running bounded vinext build..."
 timeout \
   --signal=TERM \

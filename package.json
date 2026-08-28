@@ -10,13 +10,14 @@
     "dev": "next dev -p 5173",
     "build": "bash scripts/build-verified.sh",
     "build:local": "next build",
-    "build:vercel": "npm run build:local",
+    "build:vercel": "npm run build:extension && npm run build:local",
+    "build:extension": "node scripts/generate-extension-icons.mjs && vite build --config vite.extension.config.ts && node scripts/copy-extension-assets.mjs",
     "start": "next start -p 5173",
     "dev:sites": "vite",
     "build:sites": "bash scripts/build-verified.sh",
     "start:sites": "vinext start",
-    "test": "npm run build && node --test tests/*.test.mjs",
-    "lint": "bash scripts/sites-env.sh -- eslint . --ignore-pattern dist --ignore-pattern .next",
+    "test": "npm run build && npm run build:extension && node --test tests/*.test.mjs",
+    "lint": "bash scripts/sites-env.sh -- eslint . --ignore-pattern dist --ignore-pattern extension/dist --ignore-pattern .next",
     "db:generate": "bash scripts/sites-env.sh -- drizzle-kit generate"
   },
   "dependencies": {

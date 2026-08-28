@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "UI 컬러 로직 스튜디오",
+  "version": "1.0.0",
+  "minimum_chrome_version": "114",
+  "description": "웹 이미지와 현재 화면에서 UI용 색상, 텍스트 대비, 그라데이션 팔레트를 분석합니다.",
+  "permissions": [
+    "activeTab",
+    "contextMenus",
+    "storage",
+    "unlimitedStorage"
+  ],
+  "optional_host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "UI 컬러 로직 스튜디오 열기",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "options_page": "privacy.html"
+}

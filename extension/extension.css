@@ -1,0 +1,75 @@
+.extension-command-bar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  min-height: 44px;
+  padding: 7px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  color: #ecf2de;
+  background: #20231f;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.extension-command-bar > div {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.extension-command-bar strong { font-size: 11px; }
+.extension-command-bar span { color: #aeb5a7; font-size: 10px; }
+.extension-mode-dot { width: 7px; height: 7px; border-radius: 50%; background: #dff168; box-shadow: 0 0 0 4px rgba(223, 241, 104, .1); }
+
+.extension-command-bar button,
+.extension-command-bar a {
+  height: 29px;
+  padding: 0 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  color: #f6f7f2;
+  background: rgba(255, 255, 255, 0.07);
+  font-size: 10px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.extension-command-bar button:hover,
+.extension-command-bar a:hover { background: rgba(255, 255, 255, 0.13); }
+.extension-command-bar button:disabled { cursor: wait; opacity: .58; }
+
+.extension-command-bar + #root .topbar { top: 44px; }
+
+.extension-import-status {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 100;
+  max-width: min(380px, calc(100vw - 44px));
+  padding: 12px 15px;
+  border: 1px solid #d9ddd2;
+  border-radius: 13px;
+  background: rgba(24, 27, 24, 0.94);
+  box-shadow: 0 16px 38px rgba(16, 20, 16, 0.2);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.45;
+  backdrop-filter: blur(16px);
+}
+
+@media (max-width: 760px) {
+  .extension-command-bar { padding: 7px 12px; }
+  .extension-command-bar > div:first-child span:not(.extension-mode-dot) { display: none; }
+  .extension-command-bar a { display: none; }
+}
+
+.extension-import-status[data-tone="error"] {
+  border-color: #efb1aa;
+  background: rgba(128, 42, 32, 0.96);
+}
