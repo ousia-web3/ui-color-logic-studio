@@ -7,10 +7,14 @@
   },
   "scripts": {
     "install:ci": "bash scripts/install-ci.sh",
-    "dev": "vite",
+    "dev": "next dev -p 5173",
     "build": "bash scripts/build-verified.sh",
-    "build:local": "vinext build",
-    "start": "vinext start",
+    "build:local": "next build",
+    "build:vercel": "npm run build:local",
+    "start": "next start -p 5173",
+    "dev:sites": "vite",
+    "build:sites": "bash scripts/build-verified.sh",
+    "start:sites": "vinext start",
     "test": "npm run build && node --test tests/*.test.mjs",
     "lint": "bash scripts/sites-env.sh -- eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "bash scripts/sites-env.sh -- drizzle-kit generate"

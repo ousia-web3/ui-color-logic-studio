@@ -92,6 +92,13 @@ http://localhost:5173
 > [!TIP]
 > Windows 11의 PowerShell과 명령 프롬프트에서도 같은 명령을 사용할 수 있습니다. 저장된 프로젝트가 항상 같은 브라우저 저장 공간을 사용하도록 개발 포트는 `5173`으로 고정되어 있습니다.
 
+### Vercel과 같은 운영 빌드로 로컬 확인
+
+```bash
+npm run build:local
+npm run start
+```
+
 ### 준비 사항
 
 | 항목 | 기준 |
@@ -100,6 +107,25 @@ http://localhost:5173
 | Node.js | `22.13.0` 이상 |
 | 인터넷 | 최초 `npm install` 및 테스트 이미지 출처 확인 시 필요 |
 | AI 도구 | 필요 없음 |
+
+---
+
+## ▲ Vercel 배포
+
+이 저장소는 로컬 실행과 Vercel 배포를 함께 지원합니다. `vercel.json`이 표준 Next.js 빌드인 `next build`를 자동으로 사용합니다.
+
+1. Vercel에서 **Add New → Project**를 선택합니다.
+2. GitHub 저장소 `ousia-web3/ui-color-logic-studio`를 가져옵니다.
+3. Framework Preset이 **Next.js**인지 확인합니다.
+4. 별도 환경변수 없이 **Deploy**를 실행합니다.
+
+| 환경 | 실행 방식 | 프로젝트 저장소 |
+| --- | --- | --- |
+| 로컬 | `npm run dev` | `http://localhost:5173`의 IndexedDB |
+| Vercel | GitHub 연결 후 자동 배포 | Vercel Production 주소의 IndexedDB |
+
+> [!NOTE]
+> 로컬과 Vercel은 서로 다른 브라우저 저장 영역을 사용합니다. 프로젝트를 옮길 때는 **프로젝트 JSON 내보내기·불러오기**를 사용하세요. Vercel에서는 배포마다 주소가 달라지는 Preview URL보다 고정된 Production URL 사용을 권장합니다.
 
 ---
 
@@ -288,6 +314,8 @@ public/
   manual.html               독립 실행형 한국어 사용 매뉴얼
   promo.html                9:16 소개 카드 6종과 PNG 저장 기능
   test-images/              테스트용 WebP 이미지와 출처 manifest
+tsconfig.next.json          Next.js·Vercel 전용 타입 검사 범위
+vercel.json                 Vercel Next.js 빌드 설정
 scripts/
   download-test-images.mjs  테스트 이미지 수집·변환 스크립트
 tests/                      렌더링 및 UI 구성 검사
@@ -300,12 +328,15 @@ tests/                      렌더링 및 UI 구성 검사
 
 | 명령 | 용도 |
 | --- | --- |
-| `npm run dev` | 로컬 개발 서버 실행 |
-| `npm run build:local` | Windows, macOS, Linux용 로컬 빌드 |
-| `npm run start` | 빌드된 앱 실행 |
+| `npm run dev` | Next.js 로컬 개발 서버를 5173 포트로 실행 |
+| `npm run build:local` | 표준 Next.js 운영 빌드 |
+| `npm run build:vercel` | Vercel이 사용하는 Next.js 빌드 |
+| `npm run start` | Next.js 운영 빌드를 5173 포트로 실행 |
+| `npm run dev:sites` | 기존 Sites/Vinext 개발 서버 실행 |
+| `npm run build:sites` | 기존 Sites/Vinext 호스팅 빌드 |
 | `npm run lint` | ESLint 검사 |
-| `npm run build` | 호스팅 환경용 검증 빌드 |
-| `npm test` | 빌드 후 렌더링 테스트 실행 |
+| `npm run build` | Sites 호스팅용 검증 빌드 |
+| `npm test` | Sites 빌드 후 렌더링 테스트 실행 |
 
 </details>
 

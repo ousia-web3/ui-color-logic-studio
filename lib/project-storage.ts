@@ -231,10 +231,12 @@ export function parseProjectFile(value: unknown): StoredProject | null {
   if (!isObject(value) || value.format !== "ui-color-logic-project" || value.exportVersion !== 2) return null;
   if (typeof value.name !== "string" || !Array.isArray(value.items)) return null;
   if (!isObject(value.tuning) || !isObject(value.copy)) return null;
-  if (!(["balanced", "soft", "bold", "dark"] as unknown[]).includes(value.tuning.profile)) return null;
-  if (!["saturation", "temperature", "surfaceTint", "minContrast"].every((key) => typeof value.tuning[key] === "number")) return null;
-  if (typeof value.tuning.ignoreNearNeutral !== "boolean") return null;
-  if (!["eyebrow", "title", "body", "meta", "cta"].every((key) => typeof value.copy[key] === "string")) return null;
+  const tuning = value.tuning;
+  const copy = value.copy;
+  if (!(["balanced", "soft", "bold", "dark"] as unknown[]).includes(tuning.profile)) return null;
+  if (!["saturation", "temperature", "surfaceTint", "minContrast"].every((key) => typeof tuning[key] === "number")) return null;
+  if (typeof tuning.ignoreNearNeutral !== "boolean") return null;
+  if (!["eyebrow", "title", "body", "meta", "cta"].every((key) => typeof copy[key] === "string")) return null;
   if (!value.items.every((item) => isObject(item)
     && typeof item.id === "string"
     && typeof item.name === "string"
