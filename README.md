@@ -14,7 +14,6 @@
   <img src="https://img.shields.io/badge/Storage-IndexedDB-EA580C?style=for-the-badge" alt="IndexedDB 자동 저장" />
 </p>
 
-[**실행 화면**](https://ui-color-logic-studio.study2100-ai.chatgpt.site) ·
 [**HTML 매뉴얼**](https://ui-color-logic-studio.study2100-ai.chatgpt.site/manual.html) ·
 [**9:16 소개 카드**](https://ui-color-logic-studio.study2100-ai.chatgpt.site/promo.html)
 
